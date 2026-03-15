@@ -34,6 +34,13 @@ enum class Destination(
         "Scanner",
         "Scanner"
     ),
+    CHEF(
+        "chef",
+        Icons.Rounded.Restaurant,
+        Icons.Outlined.Restaurant,
+        "UperChef",
+        "UperChef"
+    ),
     VIP(
         "vip",
         Icons.Rounded.WorkspacePremium,

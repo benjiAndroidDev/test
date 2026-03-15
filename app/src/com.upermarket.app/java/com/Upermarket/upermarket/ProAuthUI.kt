@@ -23,8 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,11 +42,12 @@ fun Context.findActivity(): Activity? = when (this) {
 
 @Composable
 fun AuthScreen(authManager: AuthManager) {
-    var authMode by remember { mutableStateOf("EMAIL") } // EMAIL, PHONE, OTP
-    var isLogin by remember { mutableStateOf(true) }
-    
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val authState = authManager.authState
+    
+    // On utilise les états centralisés de l'authManager pour ne pas les perdre
+    val authMode = authManager.authMode
 
     Column(
         modifier = Modifier
@@ -59,22 +58,13 @@ fun AuthScreen(authManager: AuthManager) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = when {
-                authMode == "OTP" -> "Vérification"
-                isLogin -> "Bon retour !"
-                else -> "Créer un compte"
-            },
+            text = if (authMode == "OTP") "Vérification" else "Bienvenue",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.ExtraBold,
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            text = when {
-                authMode == "OTP" -> "Entrez le code reçu par SMS"
-                authMode == "PHONE" -> "Connectez-vous avec votre numéro"
-                isLogin -> "Connectez-vous pour continuer vos achats"
-                else -> "Rejoignez Upermarket dès aujourd'hui"
-            },
+            text = if (authMode == "OTP") "Entrez le code reçu par SMS" else "Connectez-vous pour commencer vos achats",
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray,
             textAlign = TextAlign.Center
@@ -82,65 +72,21 @@ fun AuthScreen(authManager: AuthManager) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        var email by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var name by remember { mutableStateOf("") }
-        var phone by remember { mutableStateOf("") }
-        var otpCode by remember { mutableStateOf("") }
-        var passwordVisible by remember { mutableStateOf(false) }
+        if (authState is AuthState.Error) {
+            Text(
+                text = authState.message,
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 16.dp),
+                textAlign = TextAlign.Center
+            )
+        }
 
         when (authMode) {
-            "EMAIL" -> {
-                if (!isLogin) {
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = { Text("Nom complet") },
-                        modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = { Icon(Icons.Rounded.Person, contentDescription = null) },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") },
-                    modifier = Modifier.fillMaxWidth(),
-                    leadingIcon = { Icon(Icons.Rounded.Email, contentDescription = null) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Mot de passe") },
-                    modifier = Modifier.fillMaxWidth(),
-                    leadingIcon = { Icon(Icons.Rounded.Lock, contentDescription = null) },
-                    trailingIcon = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(
-                                imageVector = if (passwordVisible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
             "PHONE" -> {
                 OutlinedTextField(
-                    value = phone,
-                    onValueChange = { phone = it },
+                    value = authManager.phoneInput,
+                    onValueChange = { authManager.phoneInput = it },
                     label = { Text("Numéro de téléphone (+33...)") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Phone, contentDescription = null) },
@@ -151,8 +97,8 @@ fun AuthScreen(authManager: AuthManager) {
             }
             "OTP" -> {
                 OutlinedTextField(
-                    value = otpCode,
-                    onValueChange = { if (it.length <= 6) otpCode = it },
+                    value = authManager.otpInput,
+                    onValueChange = { if (it.length <= 6) authManager.otpInput = it },
                     label = { Text("Code de validation") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Numbers, contentDescription = null) },
@@ -168,51 +114,43 @@ fun AuthScreen(authManager: AuthManager) {
         Button(
             onClick = {
                 when (authMode) {
-                    "EMAIL" -> {
-                        if (isLogin) authManager.signIn(email, password)
-                        else authManager.signUp(email, password, name)
-                    }
                     "PHONE" -> {
                         val activity = context.findActivity()
-                        if (activity != null) {
-                            authManager.sendOtp(phone, activity)
-                            authMode = "OTP"
+                        if (activity != null && authManager.phoneInput.isNotBlank()) {
+                            authManager.sendOtp(authManager.phoneInput, activity)
                         }
                     }
                     "OTP" -> {
-                        authManager.verifyOtp(otpCode)
+                        if (authManager.otpInput.length == 6) {
+                            authManager.verifyOtp(authManager.otpInput)
+                        }
                     }
                 }
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = authState !is AuthState.Loading
         ) {
-            val btnText = when {
-                authMode == "OTP" -> "Vérifier le code"
-                authMode == "PHONE" -> "Envoyer le code"
-                isLogin -> "Se connecter"
-                else -> "S'inscrire"
+            if (authState is AuthState.Loading) {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)
+            } else {
+                val btnText = if (authMode == "OTP") "Vérifier le code" else "Envoyer le code"
+                Text(btnText, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
-            Text(btnText, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
 
         if (authMode == "OTP") {
-            TextButton(onClick = { authMode = "PHONE" }) {
+            TextButton(onClick = { authManager.authMode = "PHONE" }) {
                 Text("Modifier le numéro")
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (authMode == "EMAIL") {
-            TextButton(onClick = { isLogin = !isLogin }) {
-                Text(
-                    text = if (isLogin) "Pas encore de compte ? S'inscrire" else "Déjà un compte ? Se connecter",
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+        if (authMode == "PHONE") {
+            Spacer(modifier = Modifier.height(24.dp))
             
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            
+            Spacer(modifier = Modifier.height(16.dp))
             
             // GOOGLE LOGIN
             OutlinedButton(
@@ -239,7 +177,8 @@ fun AuthScreen(authManager: AuthManager) {
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, Color.LightGray)
+                border = BorderStroke(1.dp, Color.LightGray),
+                enabled = authState !is AuthState.Loading
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.google__g__logo_svg),
@@ -248,23 +187,6 @@ fun AuthScreen(authManager: AuthManager) {
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text("Continuer avec Google", color = Color.Black, fontWeight = FontWeight.Medium)
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // SWITCH TO PHONE
-            OutlinedButton(
-                onClick = { authMode = "PHONE" },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(Icons.Rounded.Phone, contentDescription = null, tint = Color.Black)
-                Spacer(modifier = Modifier.width(12.dp))
-                Text("Continuer par SMS", color = Color.Black)
-            }
-        } else if (authMode == "PHONE") {
-            TextButton(onClick = { authMode = "EMAIL" }) {
-                Text("Retour à la connexion par Email")
             }
         }
     }

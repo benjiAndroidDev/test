@@ -21,17 +21,23 @@ fun AppNavHost(
         startDestination = startDestination,
         modifier = modifier
     ) {
-
+        composable(Destination.HOME.route) {
+            HomeScreen(favoritesViewModel, cartViewModel, navController)
+        }
         composable(Destination.SEARCH.route) {
             SearchScreen(favoritesViewModel, cartViewModel)
         }
         composable(Destination.SCAN.route) {
-            ScanScreen(cartViewModel, favoritesViewModel, scanHistoryManager,)
+            ScanScreen(cartViewModel, favoritesViewModel, scanHistoryManager)
+        }
+        composable(Destination.CHEF.route) {
+            ChefScreen()
         }
         composable(Destination.VIP.route) {
             VipScreen(authManager)
         }
         composable(Destination.SETTINGS.route) {
+            SettingsScreen(authManager, false, {})
         }
     }
 }
