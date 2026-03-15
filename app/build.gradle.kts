@@ -22,9 +22,9 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("src/com.upermarket.app/AndroidManifest.xml")
-            java.srcDirs("src/com.upermarket.app/java")
-            // On déclare uniquement ce dossier pour les ressources pour supprimer les duplications avec src/main/res
-            res.srcDirs("src/com.upermarket.app/res")
+            java.setSrcDirs(listOf("src/com.upermarket.app/java"))
+            // Utilisation du dossier de ressources spécifique au projet
+            res.setSrcDirs(listOf("src/com.upermarket.app/res"))
         }
     }
 
@@ -36,7 +36,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // On laisse l'IDE gérer la signature manuelle via le menu "Build > Generate Signed Bundle"
             signingConfig = null
         }
     }
@@ -87,7 +86,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ui.auth)
-    implementation("com.google.mlkit:barcode-scanning:173.0")
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
