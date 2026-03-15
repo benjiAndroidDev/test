@@ -23,7 +23,8 @@ android {
         getByName("main") {
             manifest.srcFile("src/com.upermarket.app/AndroidManifest.xml")
             java.srcDirs("src/com.upermarket.app/java")
-            res.srcDirs("src/com.upermarket.app/res", "src/main/res")
+            // On déclare uniquement ce dossier pour les ressources pour supprimer les duplications avec src/main/res
+            res.srcDirs("src/com.upermarket.app/res")
         }
     }
 
@@ -86,7 +87,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ui.auth)
-    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+    implementation("com.google.mlkit:barcode-scanning:173.0")
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
