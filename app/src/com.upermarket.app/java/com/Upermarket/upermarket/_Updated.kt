@@ -37,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -112,8 +113,7 @@ class AuthManager(private val context: Context) {
         authState = AuthState.Loading
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth?.signInWithCredential(credential)?.addOnSuccessListener { res ->
-            val user = res.user
-            if (user != null) {
+            res.user?.let { user ->
                 val u = User(user.uid, user.displayName ?: "", user.email ?: "")
                 db?.collection("users")?.document(u.uid)?.set(u)
                 fetchUserData(user.uid)
@@ -246,7 +246,10 @@ fun MainAppContent(
             )
         },
         bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = 0.dp
+            ) {
                 destinations.forEachIndexed { index, dest ->
                     val isSelected = selectedItem == index
                     NavigationBarItem(
@@ -264,16 +267,25 @@ fun MainAppContent(
                         icon = { 
                             if (dest == Destination.CHEF) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.uperchef),
+                                    painter = painterResource(id = R.drawable._000003441),
                                     contentDescription = dest.label,
-                                    modifier = Modifier.size(24.dp).clip(CircleShape)
+                                    modifier = Modifier.size(56.dp).clip(CircleShape)
                                 )
                             } else {
-                                Icon(if (isSelected) dest.selectedIcon else dest.unselectedIcon, contentDescription = dest.label)
+                                Icon(
+                                    imageVector = if (isSelected) dest.selectedIcon else dest.unselectedIcon,
+                                    contentDescription = dest.label,
+                                    tint = Color.Black // Couleur forcée à noir
+                                )
                             }
                         },
-                        label = null, // Suppression du texte sous l'icône
-                        alwaysShowLabel = false
+                        label = null,
+                        alwaysShowLabel = false,
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color.Black,
+                            unselectedIconColor = Color.Black,
+                            indicatorColor = Color.Transparent // Supprime l'effet de pilule de couleur
+                        )
                     )
                 }
             }

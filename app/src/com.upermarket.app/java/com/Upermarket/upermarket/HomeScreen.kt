@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.upermarket.R
-import com.Upermarket.upermarket.ui.theme.UpermarketTheme
+
 data class Category(
     val name: String, 
     val imageRes: Int, 
@@ -47,6 +47,7 @@ fun HomeScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
+    var searchQuery by remember { mutableStateOf("") }
 
     val categories = listOf(
         Category("Fruits", R.drawable.fruits, Color(0xFFFFE0E0), "en:fruits"),
@@ -60,7 +61,7 @@ fun HomeScreen(
         Category("Charcut.", R.drawable.charcuterie, Color(0xFFFBE9E7), "en:charcuteries")
     )
 
-    val brands = listOf(
+    val allBrands = listOf(
         Brand("Lidl", R.drawable.lidl_logo_svg, "https://www.lidl.fr"),
         Brand("Carrefour", R.drawable.carrefour_logo_1982, "https://www.carrefour.fr"),
         Brand("E.Leclerc", R.drawable.e_leclerc_logo_svg, "https://www.e.leclerc"),
@@ -72,53 +73,72 @@ fun HomeScreen(
         Brand("Franprix", R.drawable.franprix, "https://www.franprix.fr")
     )
 
-    val carouselImages = listOf(
-        R.drawable.top_ub_2_800x1000_saint_valentin_2026_s06_0,
-        R.drawable.top_ub_800x1000_fete_des_enfants_hm_2026_s06_0,
-        R.drawable.top_ub_800x1000_ramadan_hm_2026_s06,
-        R.drawable.top_ub_800x1000_fond_de_panier_hm_2026_s06,
-        R.drawable.promos1
-    )
+    // Filtrage des marques en fonction de la recherche
+    val filteredBrands = remember(searchQuery) {
+        if (searchQuery.isEmpty()) allBrands
+        else allBrands.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(bottom = 32.dp)
     ) {
+        // --- BARRE DE RECHERCHE ULTRA MODERNE ---
         item {
-            val pagerState = rememberPagerState(pageCount = { carouselImages.size })
-            Column(modifier = Modifier.padding(top = 16.dp)) {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxWidth().height(380.dp),
-                    contentPadding = PaddingValues(horizontal = 24.dp),
-                    pageSpacing = 16.dp
-                ) { page ->
-                    Card(
-                        modifier = Modifier.fillMaxSize().shadow(16.dp, RoundedCornerShape(28.dp)),
-                        shape = RoundedCornerShape(28.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = carouselImages[page]),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.FillWidth
-                        )
-                    }
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(12.dp, RoundedCornerShape(28.dp)),
+                    placeholder = { Text("Rechercher une enseigne (ex: Lidl, Auchan...)", color = Color.Gray) },
+                    leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null, tint = Color.Black) },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery = "" }) {
+                                Icon(Icons.Rounded.Close, null, tint = Color.Gray)
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(28.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        cursorColor = Color.Black
+                    )
+                )
             }
         }
 
         item {
-            Spacer(modifier = Modifier.height(24.dp))
-            SectionHeader("Nos Enseignes")
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(brands) { brand ->
-                    BrandCard(brand) {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(brand.storeUrl))
-                        context.startActivity(intent)
+            Spacer(modifier = Modifier.height(8.dp))
+            SectionHeader(if (searchQuery.isEmpty()) "Nos Enseignes" else "Résultats pour \"$searchQuery\"")
+            
+            if (filteredBrands.isEmpty()) {
+                Text(
+                    "Aucune enseigne trouvée",
+                    modifier = Modifier.padding(24.dp).fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray
+                )
+            } else {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(filteredBrands) { brand ->
+                        BrandCard(brand) {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(brand.storeUrl))
+                            context.startActivity(intent)
+                        }
                     }
                 }
             }

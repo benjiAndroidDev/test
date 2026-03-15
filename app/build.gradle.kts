@@ -23,7 +23,7 @@ android {
         getByName("main") {
             manifest.srcFile("src/com.upermarket.app/AndroidManifest.xml")
             java.srcDirs("src/com.upermarket.app/java")
-            res.srcDirs("src/com.upermarket.app/res")
+            res.srcDirs("src/com.upermarket.app/res", "src/main/res")
         }
     }
 
