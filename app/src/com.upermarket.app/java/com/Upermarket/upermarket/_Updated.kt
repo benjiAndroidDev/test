@@ -37,7 +37,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -113,7 +112,8 @@ class AuthManager(private val context: Context) {
         authState = AuthState.Loading
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth?.signInWithCredential(credential)?.addOnSuccessListener { res ->
-            res.user?.let { user ->
+            val user = res.user
+            if (user != null) {
                 val u = User(user.uid, user.displayName ?: "", user.email ?: "")
                 db?.collection("users")?.document(u.uid)?.set(u)
                 fetchUserData(user.uid)
@@ -267,7 +267,7 @@ fun MainAppContent(
                         icon = { 
                             if (dest == Destination.CHEF) {
                                 Image(
-                                    painter = painterResource(id = R.drawable._000003441),
+                                    painter = painterResource(id = R.drawable.uperchef),
                                     contentDescription = dest.label,
                                     modifier = Modifier.size(56.dp).clip(CircleShape)
                                 )

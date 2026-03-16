@@ -31,7 +31,7 @@ fun ChefScreen() {
     var inputText by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        // Header
+        // Header avec la nouvelle image du Chef
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shadowElevation = 4.dp,
@@ -41,16 +41,20 @@ fun ChefScreen() {
                 modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Utilisation de la nouvelle ressource drawable/uperchef
                 Image(
                     painter = painterResource(id = R.drawable.uperchef),
-                    contentDescription = null,
-                    modifier = Modifier.size(50.dp).clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                    contentDescription = "Portrait de UperChef",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFF5F5F5)),
+                    contentScale = ContentScale.Fit
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text("UperChef", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Text("Votre assistant cuisine IA", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text("Votre assistant cuisine personnel", style = MaterialTheme.typography.bodySmall, color = Color(0xFF00C853))
                 }
             }
         }
@@ -80,11 +84,13 @@ fun ChefScreen() {
                     value = inputText,
                     onValueChange = { inputText = it },
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("Demandez une recette...") },
+                    placeholder = { Text("Demandez une recette ou un conseil...") },
                     shape = RoundedCornerShape(24.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFF00C853),
-                        unfocusedBorderColor = Color.LightGray
+                        unfocusedBorderColor = Color.LightGray,
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
                     ),
                     maxLines = 3
                 )
@@ -95,13 +101,14 @@ fun ChefScreen() {
                             val userMsg = inputText
                             messages = messages + Message(userMsg, true)
                             inputText = ""
-                            // Mock AI Response
                             generateAiResponse(userMsg) { aiMsg ->
                                 messages = messages + Message(aiMsg, false)
                             }
                         }
                     },
-                    modifier = Modifier.background(Color(0xFF00C853), CircleShape)
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(Color(0xFF00C853), CircleShape)
                 ) {
                     Icon(Icons.AutoMirrored.Rounded.Send, null, tint = Color.White)
                 }
@@ -130,19 +137,20 @@ fun ChatBubble(message: Message) {
                 text = message.text,
                 modifier = Modifier.padding(12.dp),
                 color = if (message.isUser) Color.White else Color.Black,
-                fontSize = 15.sp
+                fontSize = 15.sp,
+                lineHeight = 20.sp
             )
         }
     }
 }
 
 fun generateAiResponse(input: String, onResponse: (String) -> Unit) {
-    // Simple logic for mock recipes
     val response = when {
         input.contains("pâtes", ignoreCase = true) -> "Pour des pâtes express, je te conseille des pâtes à l'ail et au piment ! Il te faut : pâtes, ail, huile d'olive et un peu de parmesan. Fais revenir l'ail dans l'huile, ajoute les pâtes cuites et hop !"
         input.contains("poulet", ignoreCase = true) -> "Un poulet curry coco ? Émince le poulet, fais-le dorer, ajoute du lait de coco et du curry. Sers ça avec du riz, c'est un régal !"
         input.contains("salade", ignoreCase = true) -> "Une salade grecque : Tomates, concombres, feta, olives et oignons rouges. Un filet d'huile d'olive et c'est prêt !"
-        else -> "C'est une super idée ! Pour cette recette, commence par préparer tes ingrédients frais. Veux-tu que je cherche les prix de ces articles chez Upermarket ?"
+        input.contains("merci", ignoreCase = true) -> "Avec plaisir ! N'hésite pas si tu as d'autres ingrédients à cuisiner."
+        else -> "C'est une excellente idée ! Pour réaliser cela au mieux, je te suggère d'utiliser les produits frais que tu as scannés récemment. Veux-tu la liste complète des ingrédients ?"
     }
     onResponse(response)
 }

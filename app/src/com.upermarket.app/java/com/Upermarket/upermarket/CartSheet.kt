@@ -107,10 +107,12 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
                             shadowElevation = 2.dp
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Image(
-                                    painter = painterResource(id = R.drawable._000003443),
+                                // Utilisation d'une icône Material au lieu d'une ressource manquante
+                                Icon(
+                                    imageVector = Icons.Rounded.LocalShipping,
                                     contentDescription = "Delivery",
-                                    modifier = Modifier.size(48.dp).clip(CircleShape)
+                                    modifier = Modifier.size(32.dp),
+                                    tint = Color(0xFF00C853)
                                 )
                             }
                         }

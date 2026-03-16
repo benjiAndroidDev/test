@@ -23,7 +23,8 @@ android {
         getByName("main") {
             manifest.srcFile("src/com.upermarket.app/AndroidManifest.xml")
             java.setSrcDirs(listOf("src/com.upermarket.app/java"))
-            // Utilisation du dossier de ressources spécifique au projet
+            // On définit EXCLUSIVEMENT le dossier de ressources personnalisé
+            // pour éviter les conflits avec src/main/res
             res.setSrcDirs(listOf("src/com.upermarket.app/res"))
         }
     }
