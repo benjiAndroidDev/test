@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -48,11 +49,12 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     var searchQuery by remember { mutableStateOf("") }
+    var currentAddress by remember { mutableStateOf("12 Rue de la Paix, Paris") }
 
     val categories = listOf(
         Category("Fruits", R.drawable.fruits, Color(0xFFFFE0E0), "en:fruits"),
         Category("Légumes", R.drawable.legumes, Color(0xFFE0FFE0), "en:vegetables"),
-        Category("Viandes", R.drawable.viande, Color(0xFFFFE0B2), "en:meats"),
+        Category("Viandes", R.drawable.viandes, Color(0xFFFFE0B2), "en:meats"),
         Category("Boissons", R.drawable.boissons, Color(0xFFE1F5FE), "en:beverages"),
         Category("Épicerie", R.drawable.epicerie, Color(0xFFF3E5F5), "en:groceries"),
         Category("Surgelés", R.drawable.surgele, Color(0xFFE0F7FA), "en:frozen-foods"),
@@ -73,7 +75,6 @@ fun HomeScreen(
         Brand("Franprix", R.drawable.franprix, "https://www.franprix.fr")
     )
 
-    // Filtrage des marques en fonction de la recherche
     val filteredBrands = remember(searchQuery) {
         if (searchQuery.isEmpty()) allBrands
         else allBrands.filter { it.name.contains(searchQuery, ignoreCase = true) }
@@ -83,25 +84,68 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(bottom = 32.dp)
     ) {
+        // --- SYSTÈME D'ADRESSE MODERNE ---
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
+                    .clickable { /* TODO: Ouvrir sélecteur d'adresse */ }
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Rounded.LocationOn, 
+                        contentDescription = null, 
+                        tint = Color(0xFF00C853),
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        "Livrer à",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.Gray
+                    )
+                    Icon(
+                        Icons.Rounded.ExpandMore, 
+                        contentDescription = null, 
+                        tint = Color.Gray,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+                Text(
+                    text = currentAddress,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+
         // --- BARRE DE RECHERCHE ULTRA MODERNE ---
         item {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 16.dp)
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
             ) {
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(12.dp, RoundedCornerShape(28.dp)),
-                    placeholder = { Text("Rechercher une enseigne (ex: Lidl, Auchan...)", color = Color.Gray) },
+                        .shadow(8.dp, RoundedCornerShape(28.dp)),
+                    placeholder = { Text("Rechercher une enseigne...", color = Color.Gray) },
                     leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null, tint = Color.Black) },
                     trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { searchQuery = "" }) {
-                                Icon(Icons.Rounded.Close, null, tint = Color.Gray)
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(end = 8.dp)) {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { searchQuery = "" }) {
+                                    Icon(Icons.Rounded.Close, null, tint = Color.Gray)
+                                }
+                            }
+                            VerticalDivider(modifier = Modifier.height(24.dp).padding(horizontal = 4.dp), color = Color.LightGray)
+                            IconButton(onClick = { /* TODO: Filtres */ }) {
+                                Icon(Icons.Rounded.Tune, null, tint = Color.Black)
                             }
                         }
                     },
@@ -119,7 +163,7 @@ fun HomeScreen(
         }
 
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             SectionHeader(if (searchQuery.isEmpty()) "Nos Enseignes" else "Résultats pour \"$searchQuery\"")
             
             if (filteredBrands.isEmpty()) {

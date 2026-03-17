@@ -6,6 +6,12 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
 }
 
+// Nettoyage automatique des fichiers problématiques
+val problematicFile = file("src/com.upermarket.app/res/drawable/ecrase_de_pomme_de_terre_a_lhuile_dolive.png")
+if (problematicFile.exists()) {
+    problematicFile.renameTo(file("src/com.upermarket.app/res/drawable/ecrase_de_pomme_de_terre_a_lhuile_dolive.webp"))
+}
+
 android {
     namespace = "com.example.upermarket"
     compileSdk = 35
@@ -14,8 +20,8 @@ android {
         applicationId = "com.example.upermarket"
         minSdk = 26
         targetSdk = 35 
-        versionCode = 8 // NOUVELLE VERSION POUR LE PLAY STORE
-        versionName = "1.7"
+        versionCode = 9 // On incrémente pour la nouvelle soumission
+        versionName = "1.8"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -23,21 +29,35 @@ android {
         getByName("main") {
             manifest.srcFile("src/com.upermarket.app/AndroidManifest.xml")
             java.setSrcDirs(listOf("src/com.upermarket.app/java"))
-            // On définit EXCLUSIVEMENT le dossier de ressources personnalisé
-            // pour éviter les conflits avec src/main/res
             res.setSrcDirs(listOf("src/com.upermarket.app/res"))
+        }
+    }
+
+    signingConfigs {
+        // CONFIGURATION DE LA CLÉ DE PRODUCTION
+        // Remplissez ces champs avec vos vraies infos pour le Play Store
+        create("release") {
+            // Remplacez par le chemin absolu vers votre fichier .jks
+            // Exemple : file("/home/androiddev/Documents/mon_upermarket_key.jks")
+            storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore") 
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
         }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false 
-            isShrinkResources = false
+            isMinifyEnabled = true // Activé pour la production (plus pro)
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = null
+            // ATTENTION : Utilisez la config 'release' ici
+            // Pour l'instant je laisse debug pour que tu puisses build, 
+            // mais change-le en 'signingConfigs.getByName("release")' quand tes infos seront prêtes.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     

@@ -44,6 +44,7 @@ import com.example.upermarket.R
 
 // ==================== AUTH SYSTEM ====================
 
+
 sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
@@ -73,7 +74,7 @@ class AuthManager(private val context: Context) {
             }
             auth = FirebaseAuth.getInstance()
             db = FirebaseFirestore.getInstance()
-            
+
             auth?.addAuthStateListener { firebaseAuth ->
                 val currentUser = firebaseAuth.currentUser
                 if (currentUser != null) {
@@ -93,11 +94,11 @@ class AuthManager(private val context: Context) {
     private fun fetchUserData(uid: String) {
         val currentUser = auth?.currentUser
         val fallbackUser = User(
-            uid = uid, 
+            uid = uid,
             name = currentUser?.displayName ?: "Utilisateur",
             email = currentUser?.email ?: ""
         )
-        
+
         // Transition immédiate pour ne pas bloquer l'utilisateur
         authState = AuthState.Authenticated(fallbackUser)
 
@@ -140,7 +141,7 @@ class AuthManager(private val context: Context) {
                 override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
                     verificationId = id
                     authMode = "OTP" // BASCULEMENT SUR L'ÉCRAN CODE
-                    authState = AuthState.NotAuthenticated 
+                    authState = AuthState.NotAuthenticated
                 }
             })
             .build()
