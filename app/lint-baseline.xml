@@ -1,0 +1,2144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.1.0" type="baseline" client="gradle" dependencies="false" name="AGP (9.1.0)" variant="all" version="9.1.0">
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
+        errorLine1="                    Text(&quot;${String.format(&quot;%.2f&quot;, currentTotal)} €&quot;, fontWeight = FontWeight.Bold)"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/BudgetManagerSheet.kt"
+            line="57"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
+        errorLine1="                    Text(&quot;${String.format(&quot;%.2f&quot;, remaining)} €&quot;, fontWeight = FontWeight.ExtraBold, color = if (remaining &lt; 10) Color.Red else Color(0xFF00C853))"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/BudgetManagerSheet.kt"
+            line="75"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="MissingConstraints"
+        message="This view is not constrained. It only has designtime positions, so it will jump to (0,0) at runtime unless you add the constraints"
+        errorLine1="    &lt;fragment"
+        errorLine2="     ~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/layout/content_main.xml"
+            line="8"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="MissingDefaultResource"
+        message="The drawable &quot;kefta_marocaine_epicee_5613&quot; in drawable-1024x683 has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
+        <location
+            file="src/com.upermarket.app/res/drawable-1024x683/kefta_marocaine_epicee_5613.jpg"/>
+    </issue>
+
+    <issue
+        id="OldTargetApi"
+        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details."
+        errorLine1="        targetSdk = 35 "
+        errorLine2="        ~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="22"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="CredentialManagerMisuse"
+        message="Call to `CredentialManager.getCredential` without use of `NoCredentialException`"
+        errorLine1="                            val result = credentialManager.getCredential(context = activity, request = request)"
+        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/ProAuthUI.kt"
+            line="170"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="FragmentTagUsage"
+        message="Replace the &lt;fragment> tag with FragmentContainerView."
+        errorLine1="    &lt;fragment"
+        errorLine2="     ~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/layout/content_main.xml"
+            line="8"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="RedundantLabel"
+        message="Redundant label can be removed"
+        errorLine1="            android:label=&quot;@string/app_name&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/AndroidManifest.xml"
+            line="27"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="Limit vector icons sizes to 200×200 to keep icon drawing fast; see https://developer.android.com/studio/write/vector-asset-studio#when for more"
+        errorLine1="    android:width=&quot;702dp&quot;"
+        errorLine2="                   ~~~~~">
+        <location
+            file="src/com.upermarket.app/res/drawable/_0120504132214_logo_auchan__1983_2015_.xml"
+            line="2"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="Limit vector icons sizes to 200×200 to keep icon drawing fast; see https://developer.android.com/studio/write/vector-asset-studio#when for more"
+        errorLine1="    android:width=&quot;2500dp&quot;"
+        errorLine2="                   ~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/drawable/casino_supermarket_logo.xml"
+            line="2"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of Gradle than 9.3.1 is available: 9.4.0"
+        errorLine1="distributionUrl=https\://services.gradle.org/distributions/gradle-9.3.1-bin.zip"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/wrapper/gradle-wrapper.properties"
+            line="5"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of `compileSdk` than 35 is available: 36"
+        errorLine1="    compileSdk = 35"
+        errorLine2="    ~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="17"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-compose than 2.8.7 is available: 2.10.0"
+        errorLine1="    implementation(&quot;androidx.lifecycle:lifecycle-runtime-compose:2.8.7&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="82"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.camera:camera-core than 1.5.1 is available: 1.5.3"
+        errorLine1="    implementation(&quot;androidx.camera:camera-core:$camerax_version&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="109"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.camera:camera-camera2 than 1.5.1 is available: 1.5.3"
+        errorLine1="    implementation(&quot;androidx.camera:camera-camera2:$camerax_version&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="110"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.camera:camera-lifecycle than 1.5.1 is available: 1.5.3"
+        errorLine1="    implementation(&quot;androidx.camera:camera-lifecycle:$camerax_version&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="111"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.camera:camera-view than 1.5.1 is available: 1.5.3"
+        errorLine1="    implementation(&quot;androidx.camera:camera-view:$camerax_version&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="112"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.gms:play-services-auth than 20.7.0 is available: 21.5.1"
+        errorLine1="    implementation(&quot;com.google.android.gms:play-services-auth:20.7.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="114"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.10.0"
+        errorLine1="    implementation(&quot;androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="125"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.core:core-ktx than 1.15.0 is available: 1.18.0"
+        errorLine1="coreKtx = &quot;1.15.0&quot;"
+        errorLine2="          ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="3"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.test.ext:junit than 1.2.1 is available: 1.3.0"
+        errorLine1="junitVersion = &quot;1.2.1&quot;"
+        errorLine2="               ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="5"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.test.espresso:espresso-core than 3.6.1 is available: 3.7.0"
+        errorLine1="espressoCore = &quot;3.6.1&quot;"
+        errorLine2="               ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="6"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.10.0"
+        errorLine1="lifecycleRuntimeKtx = &quot;2.8.7&quot;"
+        errorLine2="                      ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="7"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.activity:activity-compose than 1.10.0 is available: 1.13.0"
+        errorLine1="activityCompose = &quot;1.10.0&quot;"
+        errorLine2="                  ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="8"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.compose:compose-bom than 2025.01.01 is available: 2026.03.00"
+        errorLine1="composeBom = &quot;2025.01.01&quot;"
+        errorLine2="             ~~~~~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="10"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.5 is available: 2.9.7"
+        errorLine1="navigationCompose = &quot;2.8.5&quot;"
+        errorLine2="                    ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="11"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.compose.animation:animation-graphics than 1.7.6 is available: 1.10.5"
+        errorLine1="animationGraphics = &quot;1.7.6&quot;"
+        errorLine2="                    ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="12"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.compose.foundation:foundation-layout than 1.7.6 is available: 1.10.5"
+        errorLine1="foundationLayout = &quot;1.7.6&quot;"
+        errorLine2="                   ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="13"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:protolite-well-known-types than 18.0.0 is available: 18.0.1"
+        errorLine1="protoliteWellKnownTypes = &quot;18.0.0&quot;"
+        errorLine2="                          ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="14"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.compose.material3:material3 than 1.3.1 is available: 1.4.0"
+        errorLine1="material3 = &quot;1.3.1&quot;"
+        errorLine2="            ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.games:games-activity than 3.0.5 is available: 4.4.0"
+        errorLine1="gamesActivity = &quot;3.0.5&quot;"
+        errorLine2="                ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="16"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="Upgrade `androidx.compose.foundation` for keyboard and mouse support"
+        errorLine1="foundation = &quot;1.7.6&quot;"
+        errorLine2="             ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="17"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.5 is available: 2.9.7"
+        errorLine1="navigationComposeVersion = &quot;2.8.5&quot;"
+        errorLine2="                           ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="18"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-safe-args-generator than 2.8.5 is available: 2.9.7"
+        errorLine1="navigationSafeArgsGenerator = &quot;2.8.5&quot;"
+        errorLine2="                              ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="19"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.compose.foundation:foundation-layout than 1.7.6 is available: 1.10.5"
+        errorLine1="foundationLayoutVersion = &quot;1.7.6&quot;"
+        errorLine2="                          ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="21"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.material:material than 1.12.0 is available: 1.13.0"
+        errorLine1="material = &quot;1.12.0&quot;"
+        errorLine2="           ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="27"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.appcompat:appcompat than 1.7.0 is available: 1.7.1"
+        errorLine1="appcompat = &quot;1.7.0&quot;"
+        errorLine2="            ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="28"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.constraintlayout:constraintlayout than 2.2.0 is available: 2.2.1"
+        errorLine1="constraintlayout = &quot;2.2.0&quot;"
+        errorLine2="                   ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="29"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-fragment-ktx than 2.8.5 is available: 2.9.7"
+        errorLine1="navigationFragmentKtx = &quot;2.8.5&quot;"
+        errorLine2="                        ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="30"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-ui-ktx than 2.8.5 is available: 2.9.7"
+        errorLine1="navigationUiKtx = &quot;2.8.5&quot;"
+        errorLine2="                  ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="31"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.datatransport:transport-runtime than 4.0.0 is available: 4.1.0"
+        errorLine1="transportRuntime = &quot;4.0.0&quot;"
+        errorLine2="                   ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="32"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.gms:play-services-analytics-impl than 18.1.0 is available: 18.2.0"
+        errorLine1="playServicesAnalyticsImpl = &quot;18.1.0&quot;"
+        errorLine2="                            ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="33"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.compose.ui:ui-text than 1.7.6 is available: 1.10.5"
+        errorLine1="uiText = &quot;1.7.6&quot;"
+        errorLine2="         ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="34"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.camera:camera-core than 1.4.1 is available: 1.5.3"
+        errorLine1="cameraCore = &quot;1.4.1&quot;"
+        errorLine2="             ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="35"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-bom than 33.8.0 is available: 34.10.0"
+        errorLine1="firebaseBom = &quot;33.8.0&quot;"
+        errorLine2="              ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="37"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.libraries.identity.googleid:googleid than 1.1.1 is available: 1.2.0"
+        errorLine1="googleid = &quot;1.1.1&quot;"
+        errorLine2="           ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="43"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.datastore:datastore-preferences than 1.1.2 is available: 1.2.1"
+        errorLine1="datastore = &quot;1.1.2&quot;"
+        errorLine2="            ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="45"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="Upgrade `androidx.compose.foundation` for keyboard and mouse support"
+        errorLine1="foundationVersion = &quot;1.10.3&quot;"
+        errorLine2="                    ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="46"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.google.code.gson:gson than 2.10.1 is available: 2.13.2"
+        errorLine1="    implementation(&quot;com.google.code.gson:gson:2.10.1&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="95"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.google.zxing:core than 3.5.3 is available: 3.5.4"
+        errorLine1="    implementation(&quot;com.google.zxing:core:3.5.3&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="96"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlin.android than 2.2.10 is available: 2.3.20"
+        errorLine1="kotlin = &quot;2.2.10&quot;"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="9"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlin.plugin.compose than 2.2.10 is available: 2.3.20"
+        errorLine1="kotlin = &quot;2.2.10&quot;"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="9"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlin.plugin.serialization than 2.2.10 is available: 2.3.20"
+        errorLine1="kotlin = &quot;2.2.10&quot;"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="9"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.retrofit2:converter-kotlinx-serialization than 2.11.0 is available: 3.0.0"
+        errorLine1="retrofit = &quot;2.11.0&quot;"
+        errorLine2="           ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="22"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.retrofit2:retrofit than 2.11.0 is available: 3.0.0"
+        errorLine1="retrofit = &quot;2.11.0&quot;"
+        errorLine2="           ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="22"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-serialization-json than 1.7.3 is available: 1.10.0"
+        errorLine1="kotlinxSerializationJson = &quot;1.7.3&quot;"
+        errorLine2="                           ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="23"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.okhttp3:okhttp than 4.12.0 is available: 5.3.2"
+        errorLine1="okhttp = &quot;4.12.0&quot;"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="25"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.okhttp3:logging-interceptor than 4.12.0 is available: 5.3.2"
+        errorLine1="okhttpLogging = &quot;4.12.0&quot;"
+        errorLine2="                ~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="26"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.firebaseui:firebase-ui-auth than 9.0.0 is available: 9.1.1"
+        errorLine1="firebaseUiAuth = &quot;9.0.0&quot;"
+        errorLine2="                 ~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="38"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.google.guava:guava than 33.4.0-android is available: 33.5.0-android"
+        errorLine1="guava = &quot;33.4.0-android&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="39"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies androidx.navigation:navigation-compose but with different version"
+        errorLine1="androidx-navigation-compose = { group = &quot;androidx.navigation&quot;, name = &quot;navigation-compose&quot;, version.ref = &quot;navigationCompose&quot; }"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="63"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies androidx.compose.foundation:foundation-layout but with different version"
+        errorLine1="androidx-compose-foundation-layout = { group = &quot;androidx.compose.foundation&quot;, name = &quot;foundation-layout&quot;, version.ref = &quot;foundationLayout&quot; }"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="65"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies androidx.compose.foundation:foundation but with different version"
+        errorLine1="androidx-compose-foundation = { group = &quot;androidx.compose.foundation&quot;, name = &quot;foundation&quot;, version.ref = &quot;foundation&quot; }"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="69"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies androidx.navigation:navigation-compose but with different version"
+        errorLine1="navigation-compose = { group = &quot;androidx.navigation&quot;, name = &quot;navigation-compose&quot;, version.ref = &quot;navigationComposeVersion&quot; }"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="70"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies androidx.compose.foundation:foundation-layout but with different version"
+        errorLine1="androidx-foundation-layout = { group = &quot;androidx.compose.foundation&quot;, name = &quot;foundation-layout&quot;, version.ref = &quot;foundationLayoutVersion&quot; }"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="73"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies androidx.compose.foundation:foundation but with different version"
+        errorLine1="androidx-foundation = { group = &quot;androidx.compose.foundation&quot;, name = &quot;foundation&quot;, version.ref = &quot;foundationVersion&quot; }"
+        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Desktop/upermarket/Upermarket/AndroidStudioProjects/Upermarket2/gradle/libs.versions.toml"
+            line="100"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="UnsafeOptInUsageError"
+        message="This declaration is opt-in and its usage should be marked with `@androidx.camera.core.ExperimentalGetImage` or `@OptIn(markerClass = androidx.camera.core.ExperimentalGetImage.class)`"
+        errorLine1="                                    val mediaImage = imageProxy.image"
+        errorLine2="                                                                ~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/ScanScreen.kt"
+            line="93"
+            column="65"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="This folder configuration (`v26`) is unnecessary; `minSdkVersion` is 26. Merge all the resources in this folder into `mipmap-anydpi`.">
+        <location
+            file="src/com.upermarket.app/res/mipmap-anydpi-v26"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="This folder configuration (`v23`) is unnecessary; `minSdkVersion` is 26. Merge all the resources in this folder into `values`.">
+        <location
+            file="src/com.upermarket.app/res/values-v23"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableFloatStateOf` instead of `mutableStateOf`"
+        errorLine1="    var userMaxBudget by mutableStateOf(prefs.getFloat(&quot;max_budget&quot;, 100f))"
+        errorLine2="                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/_Updated.kt"
+            line="383"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable._0120504132214_logo_auchan__1983_2015_` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/com.upermarket.app/res/drawable/_0120504132214_logo_auchan__1983_2015_.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable._10_logocasinosupermarchc3a9s_1` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/_10_logocasinosupermarchc3a9s_1.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable._675024001541135710` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/_675024001541135710.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable._7c1c4f3300000458e04bd6d` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/_7c1c4f3300000458e04bd6d.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.activity_main` appears to be unused"
+        errorLine1="&lt;androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/com.upermarket.app/res/layout/activity_main.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.adhesif_logo_grande_distribution_gms_cora_bleu_et_rouge_fond_blanc` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/adhesif_logo_grande_distribution_gms_cora_bleu_et_rouge_fond_blanc.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.androidparty` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable-nodpi/androidparty.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213607` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213607.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213611` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213611.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213616` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213616.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213622` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213622.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213629` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213629.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213633` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213633.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213639` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213639.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213643` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213643.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213649` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213649.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213653` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213653.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213657` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213657.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.capture_d__cran_2026_02_06_213701` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213701.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.carrefour_0` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/carrefour_0.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.coca` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/coca.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.purple_200` appears to be unused"
+        errorLine1="    &lt;color name=&quot;purple_200&quot;>#FFBB86FC&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/colors.xml"
+            line="3"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.purple_500` appears to be unused"
+        errorLine1="    &lt;color name=&quot;purple_500&quot;>#FF6200EE&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/colors.xml"
+            line="4"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.purple_700` appears to be unused"
+        errorLine1="    &lt;color name=&quot;purple_700&quot;>#FF3700B3&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/colors.xml"
+            line="5"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.teal_200` appears to be unused"
+        errorLine1="    &lt;color name=&quot;teal_200&quot;>#FF03DAC5&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/colors.xml"
+            line="6"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.teal_700` appears to be unused"
+        errorLine1="    &lt;color name=&quot;teal_700&quot;>#FF018786&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/colors.xml"
+            line="7"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.black` appears to be unused"
+        errorLine1="    &lt;color name=&quot;black&quot;>#FF000000&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/colors.xml"
+            line="8"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.white` appears to be unused"
+        errorLine1="    &lt;color name=&quot;white&quot;>#FFFFFFFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/colors.xml"
+            line="9"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.content_main` appears to be unused"
+        errorLine1="&lt;androidx.constraintlayout.widget.ConstraintLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/com.upermarket.app/res/layout/content_main.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.cora` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/cora.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.fab_margin` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;fab_margin&quot;>16dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/dimens.xml"
+            line="2"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.fragment_first` appears to be unused"
+        errorLine1="&lt;androidx.core.widget.NestedScrollView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/com.upermarket.app/res/layout/fragment_first.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.fragment_second` appears to be unused"
+        errorLine1="&lt;androidx.core.widget.NestedScrollView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/com.upermarket.app/res/layout/fragment_second.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.grand_frais_logo` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/grand_frais_logo.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_hourglass_animated` appears to be unused"
+        errorLine1="&lt;selector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="src/com.upermarket.app/res/drawable/ic_hourglass_animated.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.mipmap.ic_launcher_background` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/mipmap-hdpi/ic_launcher_background.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_launcher_foreground` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/com.upermarket.app/res/drawable/ic_launcher_foreground.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.images` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/images.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.images__3_` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/images__3_.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.images__4_` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/images__4_.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.istock_soupes_veloutes_thesomegirl_1349381997_1024x683` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/istock_soupes_veloutes_thesomegirl_1349381997_1024x683.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.kefta_marocaine_epicee_5613` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable-1024x683/kefta_marocaine_epicee_5613.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.lait` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/lait.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.lidl` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/lidl.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.logo_auchan_` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/logo_auchan_.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.logo_e_leclerc_sans_le_texte_svg` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/logo_e_leclerc_sans_le_texte_svg.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.navigation.nav_graph` appears to be unused"
+        errorLine1="&lt;navigation xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/com.upermarket.app/res/navigation/nav_graph.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.promos1` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/promos1.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.upermarket_text` appears to be unused"
+        errorLine1="    &lt;string name=&quot;upermarket_text&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/strings.xml"
+            line="3"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.signature_text` appears to be unused"
+        errorLine1="    &lt;string name=&quot;signature_text&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/strings.xml"
+            line="4"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.happy_birthday_text` appears to be unused"
+        errorLine1="    &lt;string name=&quot;happy_birthday_text&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/strings.xml"
+            line="5"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.androidparty_png` appears to be unused"
+        errorLine1="    &lt;string name=&quot;androidparty_png&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/strings.xml"
+            line="6"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.first_fragment_label` appears to be unused"
+        errorLine1="    &lt;string name=&quot;first_fragment_label&quot;>First Fragment&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.second_fragment_label` appears to be unused"
+        errorLine1="    &lt;string name=&quot;second_fragment_label&quot;>Second Fragment&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/strings.xml"
+            line="9"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.next` appears to be unused"
+        errorLine1="    &lt;string name=&quot;next&quot;>Next&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/strings.xml"
+            line="10"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.previous` appears to be unused"
+        errorLine1="    &lt;string name=&quot;previous&quot;>Previous&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.lorem_ipsum` appears to be unused"
+        errorLine1="    &lt;string name=&quot;lorem_ipsum&quot;>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/values/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.top_ub_2_800x1000_saint_valentin_2026_s06_0` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/top_ub_2_800x1000_saint_valentin_2026_s06_0.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.top_ub_800x1000_fete_des_enfants_hm_2026_s06_0` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/top_ub_800x1000_fete_des_enfants_hm_2026_s06_0.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.top_ub_800x1000_fond_de_panier_hm_2026_s06` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/top_ub_800x1000_fond_de_panier_hm_2026_s06.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.top_ub_800x1000_ramadan_hm_2026_s06` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/top_ub_800x1000_ramadan_hm_2026_s06.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.viandes` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/viandes.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.zoomlarge_page_32` appears to be unused">
+        <location
+            file="src/com.upermarket.app/res/drawable/zoomlarge_page_32.webp"/>
+    </issue>
+
+    <issue
+        id="IconXmlAndPng"
+        message="The following images appear both as density independent `.xml` files and as bitmap files: src/com.upermarket.app/res/drawable/ic_launcher_foreground.xml, src/com.upermarket.app/res/mipmap-hdpi/ic_launcher_foreground.webp">
+        <location
+            file="src/com.upermarket.app/res/mipmap-xxxhdpi/ic_launcher_foreground.webp"/>
+        <location
+            file="src/com.upermarket.app/res/mipmap-xxhdpi/ic_launcher_foreground.webp"/>
+        <location
+            file="src/com.upermarket.app/res/mipmap-xhdpi/ic_launcher_foreground.webp"/>
+        <location
+            file="src/com.upermarket.app/res/mipmap-mdpi/ic_launcher_foreground.webp"/>
+        <location
+            file="src/com.upermarket.app/res/mipmap-hdpi/ic_launcher_foreground.webp"/>
+        <location
+            file="src/com.upermarket.app/res/drawable/ic_launcher_foreground.xml"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/_10_logocasinosupermarchc3a9s_1.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/_10_logocasinosupermarchc3a9s_1.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/_150.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/_150.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/_1874_3_2_1920_1280.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/_1874_3_2_1920_1280.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/_221997_w1776h1332c1cx888cy542cxt0cyt0cxb1775cyb1084.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/_221997_w1776h1332c1cx888cy542cxt0cyt0cxb1775cyb1084.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/_675024001541135710.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/_675024001541135710.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/_772327608_recette_du_gros_pepere_burger_maison_faites_le_vous_meme.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/_772327608_recette_du_gros_pepere_burger_maison_faites_le_vous_meme.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/_7c1c4f3300000458e04bd6d.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/_7c1c4f3300000458e04bd6d.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/adhesif_logo_grande_distribution_gms_cora_bleu_et_rouge_fond_blanc.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/adhesif_logo_grande_distribution_gms_cora_bleu_et_rouge_fond_blanc.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/boissons.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/boissons.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213607.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213607.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213611.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213611.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213616.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213616.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213622.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213622.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213629.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213629.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213633.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213633.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213639.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213639.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213643.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213643.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213649.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213649.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213653.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213653.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213657.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213657.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/capture_d__cran_2026_02_06_213701.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/capture_d__cran_2026_02_06_213701.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/carrefour_0.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/carrefour_0.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/carrefour_logo_1982.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/carrefour_logo_1982.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/charcuterie.jpeg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/charcuterie.jpeg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/chiken_tomate_basil.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/chiken_tomate_basil.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/coca.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/coca.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/cora.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/cora.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/e_leclerc_logo_svg.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/e_leclerc_logo_svg.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ecrase_de_pomme_de_terre_a_lhuile_dolive.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/ecrase_de_pomme_de_terre_a_lhuile_dolive.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/epicerie.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/epicerie.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/franprix.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/franprix.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/french_netto_logo_2019_svg.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/french_netto_logo_2019_svg.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/fruits.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/fruits.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/grand_frais_logo.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/grand_frais_logo.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/gratin_dauphinois_cremeux_traditionnel.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/gratin_dauphinois_cremeux_traditionnel.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/i20641_carpaccio_d_ananas.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/i20641_carpaccio_d_ananas.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/images.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/images.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/images__3_.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/images__3_.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/images__4_.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/images__4_.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/istock_soupes_veloutes_thesomegirl_1349381997_1024x683.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/istock_soupes_veloutes_thesomegirl_1349381997_1024x683.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/lait.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/lait.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/legumes.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/legumes.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/lidl.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/lidl.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/lidl_logo_svg.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/lidl_logo_svg.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/logo_auchan_.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/logo_auchan_.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/logo_auchan__2015__svg.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/logo_auchan__2015__svg.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/logo_e_leclerc_sans_le_texte_svg.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/logo_e_leclerc_sans_le_texte_svg.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/monoprix.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/monoprix.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/nouveau_logo_intermarche.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/nouveau_logo_intermarche.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/pommes_de_terre_grenailles_saut_es___la_sauge.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/pommes_de_terre_grenailles_saut_es___la_sauge.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/pouletcurrycoco_4.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/pouletcurrycoco_4.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/produit_frais.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/produit_frais.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/produits_laitiers.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/produits_laitiers.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/promos1.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/promos1.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/recette_tournedos_rossini_1.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/recette_tournedos_rossini_1.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/saladedefrutis.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/saladedefrutis.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/smoothie_bowl_16df176.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/smoothie_bowl_16df176.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/surgele.jpeg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/surgele.jpeg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/top_ub_2_800x1000_saint_valentin_2026_s06_0.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/top_ub_2_800x1000_saint_valentin_2026_s06_0.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/top_ub_800x1000_fete_des_enfants_hm_2026_s06_0.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/top_ub_800x1000_fete_des_enfants_hm_2026_s06_0.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/top_ub_800x1000_fond_de_panier_hm_2026_s06.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/top_ub_800x1000_fond_de_panier_hm_2026_s06.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/top_ub_800x1000_ramadan_hm_2026_s06.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/top_ub_800x1000_ramadan_hm_2026_s06.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/truck.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/truck.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/uperchef.png` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/uperchef.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/viande.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/viande.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/viandes.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/viandes.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/wokdepoulet.jpg` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/wokdepoulet.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/zoomlarge_page_32.webp` in densityless folder">
+        <location
+            file="src/com.upermarket.app/res/drawable/zoomlarge_page_32.webp"/>
+    </issue>
+
+    <issue
+        id="IconExtension"
+        message="Misleading file extension; named `.jpg` but the file format is `png`">
+        <location
+            file="src/com.upermarket.app/res/drawable/adhesif_logo_grande_distribution_gms_cora_bleu_et_rouge_fond_blanc.jpg"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(brand.storeUrl))"
+        errorLine2="                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/HomeScreen.kt"
+            line="183"
+            column="69"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(KEY_USERS, json).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/Proauthsystem.kt"
+            line="381"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(KEY_CURRENT_USER, userId).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/Proauthsystem.kt"
+            line="409"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().remove(KEY_CURRENT_USER).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/Proauthsystem.kt"
+            line="413"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(KEY_SESSION_TOKEN, hashedToken).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/Proauthsystem.kt"
+            line="419"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().remove(KEY_SESSION_TOKEN).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/Proauthsystem.kt"
+            line="424"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="                        data = Uri.parse(&quot;mailto:upermarket@upermarketapp.com&quot;)"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/SettingsScreen.kt"
+            line="129"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="                        data = Uri.parse(&quot;mailto:upermarket@upermarketapp.com&quot;)"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/SettingsScreen.kt"
+            line="129"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(&quot;items&quot;, gson.toJson(_cartItems.value))"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/_Updated.kt"
+            line="388"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(&quot;favorite_products&quot;, gson.toJson(f)).apply(); return !exists"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/_Updated.kt"
+            line="453"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(&quot;favorite_products&quot;, gson.toJson(f)).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/_Updated.kt"
+            line="460"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(&quot;history&quot;, gson.toJson(list)).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/_Updated.kt"
+            line="472"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="    fun clearHistory() { prefs.edit().remove(&quot;history&quot;).apply() }"
+        errorLine2="                         ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/_Updated.kt"
+            line="474"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(KEY_FAVORITES, json).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/improvedapi.kt"
+            line="188"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().remove(KEY_FAVORITES).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/improvedapi.kt"
+            line="194"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(barcode, json).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/java/com/Upermarket/upermarket/improvedapi.kt"
+            line="215"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.google.android.play:integrity:1.6.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="77"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.google.firebase:firebase-appcheck-playintegrity&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="78"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.google.firebase:firebase-appcheck-ktx&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="79"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;androidx.lifecycle:lifecycle-runtime-compose:2.8.7&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="82"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.google.code.gson:gson:2.10.1&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="95"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.google.zxing:core:3.5.3&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="96"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.google.firebase:firebase-firestore-ktx&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="97"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.google.mlkit:barcode-scanning:17.3.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="102"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead (androidx.camera:camera-core is already available as `androidx-camera-core`, but using version 1.4.1 instead)"
+        errorLine1="    implementation(&quot;androidx.camera:camera-core:$camerax_version&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="109"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;androidx.camera:camera-camera2:$camerax_version&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="110"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;androidx.camera:camera-lifecycle:$camerax_version&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="111"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;androidx.camera:camera-view:$camerax_version&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="112"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;com.google.android.gms:play-services-auth:20.7.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="114"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    implementation(&quot;androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="125"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="    &lt;com.google.android.material.floatingactionbutton.FloatingActionButton"
+        errorLine2="     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/com.upermarket.app/res/layout/activity_main.xml"
+            line="24"
+            column="6"/>
+    </issue>
+
+</issues>
