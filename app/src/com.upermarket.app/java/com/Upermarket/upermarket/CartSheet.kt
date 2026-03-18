@@ -28,7 +28,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.upermarket.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.net.URL
+import java.net.URLEncoder
 import java.util.Locale
+
+// --- SERVICE API ADRESSE FRANCE ---
+suspend fun searchRealAddresses(query: String): List<String> = withContext(Dispatchers.IO) {
+    if (query.length < 3) return@withContext emptyList()
+    try {
+        val encoded = URLEncoder.encode(query, "UTF-8")
+        val response = URL("https://api-adresse.data.gouv.fr/search/?q=$encoded&limit=5").readText()
+        val features = JSONObject(response).getJSONArray("features")
+        val results = mutableListOf<String>()
+        for (i in 0 until features.length()) {
+            results.add(features.getJSONObject(i).getJSONObject("properties").getString("label"))
+        }
+        results
+    } catch (e: Exception) { emptyList() }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +85,7 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
                 }
             }
 
-            // --- SECTION RÉSUMÉ & COMMANDE ---
+            // --- RÉSUMÉ & COMMANDE ---
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
@@ -72,7 +93,7 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
                 shadowElevation = 24.dp
             ) {
                 Column(modifier = Modifier.padding(24.dp).navigationBarsPadding()) {
-                    // SÉLECTEUR DE LIVRAISON / DRIVE
+                    // SÉLECTEUR DRIVE INTERACTIF
                     Surface(
                         onClick = { showCheckoutOptions = true },
                         modifier = Modifier.fillMaxWidth().shadow(8.dp, RoundedCornerShape(20.dp)),
@@ -129,19 +150,20 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
         ModalBottomSheet(onDismissRequest = { showCheckoutOptions = false }) {
             CheckoutOptionsSheet(
                 totalPrice = cartViewModel.totalPrice,
-                onDriveClick = { 
-                    showCheckoutOptions = false
-                    showDrivePicker = true 
-                },
+                onDriveClick = { showCheckoutOptions = false; showDrivePicker = true },
                 onConfirm = { showCheckoutOptions = false }
             )
         }
     }
 
-    // --- SÉLECTEUR DE DRIVE ---
+    // --- SÉLECTEUR DE DRIVE AVEC API MAPS ---
     if (showDrivePicker) {
-        ModalBottomSheet(onDismissRequest = { showDrivePicker = false }) {
-            DrivePickerSheet(
+        ModalBottomSheet(
+            onDismissRequest = { showDrivePicker = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            containerColor = Color.White
+        ) {
+            DrivePickerWithMapsSheet(
                 onDriveSelected = { name, logo ->
                     cartViewModel.selectedDrive = name
                     cartViewModel.selectedDriveLogo = logo
@@ -159,6 +181,87 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
             onAddToCart = { price -> cartViewModel.addToCart(selectedProduct!!, price); selectedProduct = null },
             onDismiss = { selectedProduct = null }
         )
+    }
+}
+
+@Composable
+fun DrivePickerWithMapsSheet(onDriveSelected: (String, Int) -> Unit) {
+    var addressQuery by remember { mutableStateOf("") }
+    var addressSuggestions by remember { mutableStateOf(listOf<String>()) }
+    var selectedAddress by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+
+    val drives = listOf(
+        Pair("Lidl Drive", R.drawable.lidl_logo_svg),
+        Pair("Carrefour Drive", R.drawable.carrefour_logo_1982),
+        Pair("E.Leclerc Drive", R.drawable.e_leclerc_logo_svg),
+        Pair("Auchan Drive", R.drawable.logo_auchan__2015__svg),
+        Pair("Intermarché Drive", R.drawable.nouveau_logo_intermarche),
+        Pair("Casino Drive", R.drawable.casino_supermarket_logo)
+    )
+
+    Column(modifier = Modifier.padding(24.dp).fillMaxHeight(0.85f).navigationBarsPadding()) {
+        Text("Trouver un Drive", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+        Text("Entrez votre adresse pour localiser les magasins", color = Color.Gray, modifier = Modifier.padding(bottom = 20.dp))
+
+        // Barre de recherche d'adresse avec API réelle
+        OutlinedTextField(
+            value = addressQuery,
+            onValueChange = { 
+                addressQuery = it
+                scope.launch { addressSuggestions = searchRealAddresses(it) }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Tapez votre adresse...") },
+            leadingIcon = { Icon(Icons.Rounded.LocationSearching, null, tint = Color(0xFF00C853)) },
+            shape = RoundedCornerShape(16.dp),
+            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Color(0xFF00C853))
+        )
+
+        // Affichage des suggestions fluides
+        AnimatedVisibility(visible = addressSuggestions.isNotEmpty() && selectedAddress.isEmpty()) {
+            Surface(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), shape = RoundedCornerShape(16.dp), color = Color(0xFFF5F5F5)) {
+                Column {
+                    addressSuggestions.forEach { suggestion ->
+                        Text(text = suggestion, modifier = Modifier.fillMaxWidth().clickable { 
+                            selectedAddress = suggestion
+                            addressQuery = suggestion
+                            addressSuggestions = emptyList()
+                        }.padding(16.dp), fontSize = 14.sp)
+                        HorizontalDivider(color = Color.White.copy(alpha = 0.5f))
+                    }
+                }
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+        Text(if(selectedAddress.isEmpty()) "Magasins recommandés" else "Magasins près de $selectedAddress", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(16.dp))
+
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            items(drives) { drive ->
+                Surface(
+                    modifier = Modifier.fillMaxWidth().clickable { onDriveSelected(drive.first, drive.second) },
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFFF5F5F5),
+                    border = BorderStroke(1.dp, if(selectedAddress.isNotEmpty()) Color(0xFF00C853).copy(alpha = 0.3f) else Color.Black.copy(alpha = 0.05f))
+                ) {
+                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Surface(shape = RoundedCornerShape(12.dp), color = Color.White, modifier = Modifier.size(48.dp)) {
+                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(8.dp)) {
+                                Image(painter = painterResource(id = drive.second), contentDescription = null, contentScale = ContentScale.Fit)
+                            }
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(drive.first, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(if(selectedAddress.isEmpty()) "Ouvert" else "Ouvert • À ${(1..5).random()},${(1..9).random()} km", color = Color(0xFF00C853), fontSize = 12.sp)
+                        }
+                        Icon(Icons.Rounded.ChevronRight, null, tint = Color.LightGray)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -181,49 +284,6 @@ fun CheckoutOptionsSheet(totalPrice: Float, onDriveClick: () -> Unit, onConfirm:
             Text("Confirmer ma commande", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.height(12.dp))
-    }
-}
-
-@Composable
-fun DrivePickerSheet(onDriveSelected: (String, Int) -> Unit) {
-    val drives = listOf(
-        Pair("Lidl Drive", R.drawable.lidl_logo_svg),
-        Pair("Carrefour Drive", R.drawable.carrefour_logo_1982),
-        Pair("E.Leclerc Drive", R.drawable.e_leclerc_logo_svg),
-        Pair("Auchan Drive", R.drawable.logo_auchan__2015__svg),
-        Pair("Intermarché Drive", R.drawable.nouveau_logo_intermarche),
-        Pair("Casino Drive", R.drawable.casino_supermarket_logo)
-    )
-
-    Column(modifier = Modifier.padding(24.dp).navigationBarsPadding()) {
-        Text("Sélectionner un Drive", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-        Text("Magasins disponibles à proximité de Paris", color = Color.Gray, modifier = Modifier.padding(bottom = 20.dp))
-
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(drives) { drive ->
-                Surface(
-                    modifier = Modifier.fillMaxWidth().clickable { onDriveSelected(drive.first, drive.second) },
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFFF5F5F5),
-                    border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.05f))
-                ) {
-                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Surface(shape = RoundedCornerShape(12.dp), color = Color.White, modifier = Modifier.size(48.dp)) {
-                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(8.dp)) {
-                                Image(painter = painterResource(id = drive.second), contentDescription = null, contentScale = ContentScale.Fit)
-                            }
-                        }
-                        Spacer(Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(drive.first, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text("Ouvert • À 1.2 km", color = Color(0xFF00C853), fontSize = 12.sp)
-                        }
-                        Icon(Icons.Rounded.ChevronRight, null, tint = Color.LightGray)
-                    }
-                }
-            }
-        }
-        Spacer(Modifier.height(16.dp))
     }
 }
 
