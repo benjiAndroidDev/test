@@ -1,6 +1,7 @@
 package com.Upermarket.upermarket
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,7 +19,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -29,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.upermarket.R
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -36,27 +40,21 @@ import java.net.URL
 import java.net.URLEncoder
 import java.util.Locale
 
-// --- SERVICE API ADRESSE FRANCE ---
-suspend fun searchRealAddresses(query: String): List<String> = withContext(Dispatchers.IO) {
-    if (query.length < 3) return@withContext emptyList()
-    try {
-        val encoded = URLEncoder.encode(query, "UTF-8")
-        val response = URL("https://api-adresse.data.gouv.fr/search/?q=$encoded&limit=5").readText()
-        val features = JSONObject(response).getJSONArray("features")
-        val results = mutableListOf<String>()
-        for (i in 0 until features.length()) {
-            results.add(features.getJSONObject(i).getJSONObject("properties").getString("label"))
-        }
-        results
-    } catch (e: Exception) { emptyList() }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewModel) {
     var selectedProduct by remember { mutableStateOf<Product?>(null) }
     var showCheckoutOptions by remember { mutableStateOf(false) }
     var showDrivePicker by remember { mutableStateOf(false) }
+    var isOrderConfirming by remember { mutableStateOf(false) }
+    var isOrderSuccess by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    // Animation de rebond pour le résumé de livraison
+    val driveScale by animateFloatAsState(
+        targetValue = if (cartViewModel.selectedDrive != "Drive") 1.05f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy), label = ""
+    )
 
     Column(
         modifier = Modifier
@@ -85,21 +83,24 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
                 }
             }
 
-            // --- RÉSUMÉ & COMMANDE ---
+            // --- SECTION RÉSUMÉ & COMMANDE PREMIUM ---
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
                 color = Color.White,
-                shadowElevation = 24.dp
+                shadowElevation = 32.dp
             ) {
                 Column(modifier = Modifier.padding(24.dp).navigationBarsPadding()) {
-                    // SÉLECTEUR DRIVE INTERACTIF
+                    // SÉLECTEUR DRIVE INTERACTIF AVEC ANIMATION
                     Surface(
                         onClick = { showCheckoutOptions = true },
-                        modifier = Modifier.fillMaxWidth().shadow(8.dp, RoundedCornerShape(20.dp)),
-                        shape = RoundedCornerShape(20.dp),
-                        color = Color(0xFFF9F9F9),
-                        border = BorderStroke(1.dp, Color(0xFF00C853).copy(alpha = 0.1f))
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .scale(driveScale)
+                            .shadow(if(cartViewModel.selectedDrive != "Drive") 12.dp else 4.dp, RoundedCornerShape(24.dp)),
+                        shape = RoundedCornerShape(24.dp),
+                        color = if(cartViewModel.selectedDrive != "Drive") Color(0xFFF1FDF5) else Color(0xFFF9F9F9),
+                        border = BorderStroke(1.dp, if(cartViewModel.selectedDrive != "Drive") Color(0xFF00C853).copy(0.2f) else Color.Transparent)
                     ) {
                         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                             Surface(shape = CircleShape, color = Color.White, modifier = Modifier.size(56.dp), shadowElevation = 2.dp) {
@@ -114,10 +115,10 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
                             }
                             Spacer(Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(if(cartViewModel.selectedDrive == "Drive") "Passer la commande" else "Drive sélectionné", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
-                                Text(cartViewModel.selectedDrive, color = Color(0xFF00C853), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text(if(cartViewModel.selectedDrive == "Drive") "Mode de retrait" else "Magasin sélectionné", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
+                                Text(cartViewModel.selectedDrive, color = if(cartViewModel.selectedDrive != "Drive") Color(0xFF00C853) else Color.Gray, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                             }
-                            Icon(Icons.Rounded.ExpandCircleDown, null, tint = Color.Black, modifier = Modifier.size(24.dp))
+                            Icon(Icons.Rounded.ChevronRight, null, tint = Color.Black)
                         }
                     }
 
@@ -125,19 +126,52 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Column {
-                            Text("Total Estimé", color = Color.Gray, style = MaterialTheme.typography.labelLarge)
-                            Text("${String.format(Locale.FRANCE, "%.2f", cartViewModel.totalPrice)} €", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black), color = Color.Black)
+                            Text("Total TTC", color = Color.Gray, style = MaterialTheme.typography.labelLarge)
+                            Text("${String.format(Locale.FRANCE, "%.2f", cartViewModel.totalPrice)} €", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black, letterSpacing = (-1).sp), color = Color.Black)
                         }
+                        
+                        // --- BOUTON DE COMMANDE ULTRA PRO ---
                         Button(
-                            onClick = { showCheckoutOptions = true },
-                            modifier = Modifier.height(60.dp).widthIn(min = 180.dp),
-                            shape = RoundedCornerShape(18.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
+                            onClick = { 
+                                if (!isOrderConfirming && !isOrderSuccess) {
+                                    scope.launch {
+                                        isOrderConfirming = true
+                                        delay(1500)
+                                        isOrderConfirming = false
+                                        isOrderSuccess = true
+                                        delay(2500)
+                                        isOrderSuccess = false
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .height(64.dp)
+                                .widthIn(min = 180.dp)
+                                .shadow(if(!isOrderSuccess) 16.dp else 0.dp, RoundedCornerShape(20.dp)),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if(isOrderSuccess) Color(0xFF00C853) else Color.Black,
+                                contentColor = Color.White
+                            ),
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
                         ) {
-                            Text("Commander", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                            Spacer(Modifier.width(8.dp))
-                            Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, modifier = Modifier.size(20.dp))
+                            AnimatedContent(targetState = isOrderConfirming || isOrderSuccess, label = "") { state ->
+                                if (isOrderConfirming) {
+                                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp), strokeWidth = 3.dp)
+                                } else if (isOrderSuccess) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Rounded.CheckCircle, null, modifier = Modifier.size(24.dp))
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Validé !", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                                    }
+                                } else {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text("Commander", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
+                                        Spacer(Modifier.width(12.dp))
+                                        Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, modifier = Modifier.size(20.dp))
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -145,7 +179,7 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
         }
     }
 
-    // --- DIALOGUE DE COMMANDE ---
+    // --- DIALOGUES ---
     if (showCheckoutOptions) {
         ModalBottomSheet(onDismissRequest = { showCheckoutOptions = false }) {
             CheckoutOptionsSheet(
@@ -156,13 +190,8 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
         }
     }
 
-    // --- SÉLECTEUR DE DRIVE AVEC API MAPS ---
     if (showDrivePicker) {
-        ModalBottomSheet(
-            onDismissRequest = { showDrivePicker = false },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            containerColor = Color.White
-        ) {
+        ModalBottomSheet(onDismissRequest = { showDrivePicker = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
             DrivePickerWithMapsSheet(
                 onDriveSelected = { name, logo ->
                     cartViewModel.selectedDrive = name
@@ -174,13 +203,22 @@ fun CartSheet(cartViewModel: CartViewModel, favoritesViewModel: FavoritesViewMod
     }
 
     if (selectedProduct != null) {
-        ProductDetailSheet(
-            product = selectedProduct!!,
-            isFavorite = favoritesViewModel.isFavorite(selectedProduct!!),
-            onToggleFavorite = { favoritesViewModel.toggleFavorite(selectedProduct!!) },
-            onAddToCart = { price -> cartViewModel.addToCart(selectedProduct!!, price); selectedProduct = null },
-            onDismiss = { selectedProduct = null }
-        )
+        ProductDetailSheet(product = selectedProduct!!, isFavorite = favoritesViewModel.isFavorite(selectedProduct!!), onToggleFavorite = { favoritesViewModel.toggleFavorite(selectedProduct!!) }, onAddToCart = { price -> cartViewModel.addToCart(selectedProduct!!, price); selectedProduct = null }, onDismiss = { selectedProduct = null })
+    }
+}
+
+@Composable
+fun CheckoutOptionsSheet(totalPrice: Float, onDriveClick: () -> Unit, onConfirm: () -> Unit) {
+    Column(modifier = Modifier.padding(24.dp).navigationBarsPadding()) {
+        Text("Mode de service", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+        Spacer(Modifier.height(24.dp))
+        CheckoutOptionItem(title = "Livraison Express", subtitle = "Chez vous en 25 min", icon = Icons.Rounded.Bolt, color = Color(0xFFFFB300), price = "2,99 €", onClick = onConfirm)
+        Spacer(Modifier.height(12.dp))
+        CheckoutOptionItem(title = "Drive & Collect", subtitle = "Gratuit • Dans votre magasin", icon = Icons.Rounded.Storefront, color = Color(0xFF1976D2), price = "Gratuit", onClick = onDriveClick)
+        Spacer(Modifier.height(32.dp))
+        Button(onClick = onConfirm, modifier = Modifier.fillMaxWidth().height(64.dp), shape = RoundedCornerShape(20.dp), colors = ButtonDefaults.buttonColors(containerColor = Color.Black)) {
+            Text("Confirmer", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        }
     }
 }
 
@@ -191,136 +229,66 @@ fun DrivePickerWithMapsSheet(onDriveSelected: (String, Int) -> Unit) {
     var selectedAddress by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
-    val drives = listOf(
-        Pair("Lidl Drive", R.drawable.lidl_logo_svg),
-        Pair("Carrefour Drive", R.drawable.carrefour_logo_1982),
-        Pair("E.Leclerc Drive", R.drawable.e_leclerc_logo_svg),
-        Pair("Auchan Drive", R.drawable.logo_auchan__2015__svg),
-        Pair("Intermarché Drive", R.drawable.nouveau_logo_intermarche),
-        Pair("Casino Drive", R.drawable.casino_supermarket_logo)
-    )
+    val drives = listOf(Pair("Lidl Drive", R.drawable.lidl_logo_svg), Pair("Carrefour Drive", R.drawable.carrefour_logo_1982), Pair("E.Leclerc Drive", R.drawable.e_leclerc_logo_svg), Pair("Auchan Drive", R.drawable.logo_auchan__2015__svg), Pair("Intermarché Drive", R.drawable.nouveau_logo_intermarche))
 
     Column(modifier = Modifier.padding(24.dp).fillMaxHeight(0.85f).navigationBarsPadding()) {
-        Text("Trouver un Drive", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-        Text("Entrez votre adresse pour localiser les magasins", color = Color.Gray, modifier = Modifier.padding(bottom = 20.dp))
-
-        // Barre de recherche d'adresse avec API réelle
+        Text("Choisir votre magasin", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+        Spacer(Modifier.height(20.dp))
         OutlinedTextField(
             value = addressQuery,
-            onValueChange = { 
-                addressQuery = it
-                scope.launch { addressSuggestions = searchRealAddresses(it) }
-            },
+            onValueChange = { addressQuery = it; scope.launch { addressSuggestions = searchRealAddressesForStore(it) } },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Tapez votre adresse...") },
-            leadingIcon = { Icon(Icons.Rounded.LocationSearching, null, tint = Color(0xFF00C853)) },
+            placeholder = { Text("Votre adresse (Ville, CP)...") },
+            leadingIcon = { Icon(Icons.Rounded.Search, null, tint = Color(0xFF00C853)) },
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Color(0xFF00C853))
         )
-
-        // Affichage des suggestions fluides
         AnimatedVisibility(visible = addressSuggestions.isNotEmpty() && selectedAddress.isEmpty()) {
             Surface(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), shape = RoundedCornerShape(16.dp), color = Color(0xFFF5F5F5)) {
-                Column {
-                    addressSuggestions.forEach { suggestion ->
-                        Text(text = suggestion, modifier = Modifier.fillMaxWidth().clickable { 
-                            selectedAddress = suggestion
-                            addressQuery = suggestion
-                            addressSuggestions = emptyList()
-                        }.padding(16.dp), fontSize = 14.sp)
-                        HorizontalDivider(color = Color.White.copy(alpha = 0.5f))
-                    }
-                }
+                Column { addressSuggestions.forEach { Text(text = it, modifier = Modifier.fillMaxWidth().clickable { selectedAddress = it; addressQuery = it; addressSuggestions = emptyList() }.padding(16.dp)) } }
             }
         }
-
         Spacer(Modifier.height(24.dp))
-        Text(if(selectedAddress.isEmpty()) "Magasins recommandés" else "Magasins près de $selectedAddress", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(16.dp))
-
         LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             items(drives) { drive ->
                 Surface(
                     modifier = Modifier.fillMaxWidth().clickable { onDriveSelected(drive.first, drive.second) },
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = Color(0xFFF5F5F5),
-                    border = BorderStroke(1.dp, if(selectedAddress.isNotEmpty()) Color(0xFF00C853).copy(alpha = 0.3f) else Color.Black.copy(alpha = 0.05f))
+                    border = BorderStroke(1.dp, if(selectedAddress.isNotEmpty()) Color(0xFF00C853).copy(0.2f) else Color.Transparent)
                 ) {
                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Surface(shape = RoundedCornerShape(12.dp), color = Color.White, modifier = Modifier.size(48.dp)) {
-                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(8.dp)) {
-                                Image(painter = painterResource(id = drive.second), contentDescription = null, contentScale = ContentScale.Fit)
-                            }
-                        }
+                        Surface(shape = RoundedCornerShape(12.dp), color = Color.White, modifier = Modifier.size(48.dp)) { Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(8.dp)) { Image(painter = painterResource(id = drive.second), contentDescription = null, contentScale = ContentScale.Fit) } }
                         Spacer(Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(drive.first, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text(if(selectedAddress.isEmpty()) "Ouvert" else "Ouvert • À ${(1..5).random()},${(1..9).random()} km", color = Color(0xFF00C853), fontSize = 12.sp)
+                            Text(if(selectedAddress.isEmpty()) "Ouvert" else "À ${(1..5).random()} km", color = Color(0xFF00C853), fontSize = 12.sp)
                         }
-                        Icon(Icons.Rounded.ChevronRight, null, tint = Color.LightGray)
+                        Icon(Icons.Rounded.AddCircle, null, tint = Color.Black)
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun CheckoutOptionsSheet(totalPrice: Float, onDriveClick: () -> Unit, onConfirm: () -> Unit) {
-    Column(modifier = Modifier.padding(24.dp).navigationBarsPadding()) {
-        Text("Choisir votre service", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-        Text("Sélectionnez comment vous souhaitez recevoir vos articles", color = Color.Gray, modifier = Modifier.padding(bottom = 24.dp))
-
-        CheckoutOptionItem(title = "Livraison Express", subtitle = "Chez vous dans 20-35 min", icon = Icons.Rounded.Bolt, color = Color(0xFFFFB300), price = "2,99 €", onClick = onConfirm)
-        Spacer(Modifier.height(12.dp))
-        CheckoutOptionItem(title = "Drive & Collect", subtitle = "Choisissez votre magasin favori", icon = Icons.Rounded.Storefront, color = Color(0xFF1976D2), price = "Gratuit", onClick = onDriveClick)
-
-        Spacer(Modifier.height(32.dp))
-        Row(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Total à régler", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text("${String.format(Locale.FRANCE, "%.2f", totalPrice)} €", fontWeight = FontWeight.Black, fontSize = 20.sp, color = Color(0xFF00C853))
-        }
-        Button(onClick = onConfirm, modifier = Modifier.fillMaxWidth().height(64.dp), shape = RoundedCornerShape(20.dp), colors = ButtonDefaults.buttonColors(containerColor = Color.Black)) {
-            Text("Confirmer ma commande", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        }
-        Spacer(Modifier.height(12.dp))
     }
 }
 
 @Composable
 fun CheckoutOptionItem(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector, color: Color, price: String, onClick: () -> Unit) {
-    Surface(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
-        color = Color(0xFFF5F5F5),
-        border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.05f))
-    ) {
+    Surface(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick), shape = RoundedCornerShape(24.dp), color = Color(0xFFF5F5F5)) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Surface(modifier = Modifier.size(48.dp), shape = CircleShape, color = color.copy(alpha = 0.1f)) {
-                Box(contentAlignment = Alignment.Center) { Icon(icon, null, tint = color) }
-            }
+            Surface(modifier = Modifier.size(48.dp), shape = CircleShape, color = color.copy(alpha = 0.1f)) { Box(contentAlignment = Alignment.Center) { Icon(icon, null, tint = color) } }
             Spacer(Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(subtitle, color = Color.Gray, fontSize = 12.sp)
-            }
-            Text(price, fontWeight = FontWeight.ExtraBold, color = Color.Black)
+            Column(modifier = Modifier.weight(1f)) { Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp); Text(subtitle, color = Color.Gray, fontSize = 12.sp) }
+            Text(price, fontWeight = FontWeight.ExtraBold)
         }
     }
 }
 
 @Composable
 fun ModernCartProductCard(item: CartItem, cartViewModel: CartViewModel, onProductClick: () -> Unit) {
-    Surface(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onProductClick),
-        shape = RoundedCornerShape(24.dp),
-        color = Color.White,
-        border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.05f))
-    ) {
+    Surface(modifier = Modifier.fillMaxWidth().clickable(onClick = onProductClick), shape = RoundedCornerShape(24.dp), color = Color.White, border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.05f))) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.size(90.dp).clip(RoundedCornerShape(20.dp)).background(Color(0xFFF9F9F9)), contentAlignment = Alignment.Center) {
-                Image(painter = rememberAsyncImagePainter(item.product.imageUrl), contentDescription = null, modifier = Modifier.size(70.dp), contentScale = ContentScale.Fit)
-            }
+            Box(modifier = Modifier.size(90.dp).clip(RoundedCornerShape(20.dp)).background(Color(0xFFF9F9F9)), contentAlignment = Alignment.Center) { Image(painter = rememberAsyncImagePainter(item.product.imageUrl), contentDescription = null, modifier = Modifier.size(70.dp), contentScale = ContentScale.Fit) }
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = item.product.name ?: "Produit", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -341,9 +309,7 @@ fun ModernCartProductCard(item: CartItem, cartViewModel: CartViewModel, onProduc
 fun EmptyCartView() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Surface(modifier = Modifier.size(120.dp), shape = CircleShape, color = Color(0xFFF5F5F5)) {
-                Box(contentAlignment = Alignment.Center) { Icon(Icons.Rounded.ShoppingBag, null, modifier = Modifier.size(50.dp), tint = Color.LightGray) }
-            }
+            Surface(modifier = Modifier.size(120.dp), shape = CircleShape, color = Color(0xFFF5F5F5)) { Box(contentAlignment = Alignment.Center) { Icon(Icons.Rounded.ShoppingBag, null, modifier = Modifier.size(50.dp), tint = Color.LightGray) } }
             Spacer(Modifier.height(24.dp))
             Text("Votre panier est vide", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text("Commencez vos achats maintenant", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)

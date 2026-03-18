@@ -146,26 +146,29 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            // --- BARRE DE RECHERCHE ULTRA MODERNE ---
+            // --- BARRE DE RECHERCHE AFFINÉE (PLUS PROPRE) ---
             item {
-                Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp)) {
+                Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp)) {
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        modifier = Modifier.fillMaxWidth().shadow(12.dp, RoundedCornerShape(28.dp)),
-                        placeholder = { Text("Rechercher un magasin (Lidl, Auchan...)", color = Color.Gray) },
-                        leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null, tint = Color.Black) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .shadow(4.dp, RoundedCornerShape(26.dp)),
+                        placeholder = { Text("Lidl, Carrefour, Auchan...", color = Color.Gray, fontSize = 14.sp) },
+                        leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null, tint = Color.Black, modifier = Modifier.size(20.dp)) },
                         trailingIcon = {
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(end = 8.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(end = 4.dp)) {
                                 if (searchQuery.isNotEmpty()) {
-                                    IconButton(onClick = { searchQuery = "" }) { Icon(Icons.Rounded.Close, null, tint = Color.Gray) }
+                                    IconButton(onClick = { searchQuery = "" }, modifier = Modifier.size(32.dp)) { Icon(Icons.Rounded.Close, null, tint = Color.Gray, modifier = Modifier.size(18.dp)) }
                                 }
-                                VerticalDivider(modifier = Modifier.height(24.dp).padding(horizontal = 4.dp), color = Color.LightGray)
-                                IconButton(onClick = { /* Filtres */ }) { Icon(Icons.Rounded.Tune, null, tint = Color.Black) }
+                                VerticalDivider(modifier = Modifier.height(20.dp).padding(horizontal = 4.dp), color = Color.LightGray.copy(alpha = 0.5f))
+                                IconButton(onClick = { /* Filtres */ }, modifier = Modifier.size(32.dp)) { Icon(Icons.Rounded.Tune, null, tint = Color.DarkGray, modifier = Modifier.size(18.dp)) }
                             }
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(28.dp),
+                        shape = RoundedCornerShape(26.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = Color.White,
                             unfocusedContainerColor = Color.White,
