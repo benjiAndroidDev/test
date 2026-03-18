@@ -110,34 +110,21 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            // --- HEADER LOCALISATION PRO ---
-            Column(modifier = Modifier.fillMaxWidth().background(Color.White).padding(top = 8.dp)) {
-                Surface(
-                    onClick = { showAddressSheet = true },
-                    color = Color.White,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Surface(modifier = Modifier.size(42.dp), shape = CircleShape, color = Color(0xFF00C853).copy(alpha = 0.1f)) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Rounded.MyLocation, null, tint = Color(0xFF00C853), modifier = Modifier.size(22.dp))
-                            }
-                        }
-                        Spacer(Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Livrer à", style = MaterialTheme.typography.labelMedium, color = Color.Gray, fontWeight = FontWeight.Bold)
-                                Icon(Icons.Rounded.KeyboardArrowDown, null, tint = Color.Gray, modifier = Modifier.size(16.dp))
-                            }
-                            Text(text = currentAddress, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Black), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        }
-                        IconButton(onClick = { /* Profil */ }) {
-                            Icon(Icons.Rounded.AccountCircle, null, tint = Color.Black, modifier = Modifier.size(30.dp))
-                        }
-                    }
+            // --- HEADER ÉPURÉ AVEC LOGO ---
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "Upermarket",
+                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black, color = Color.Black)
+                )
+                IconButton(onClick = { /* Profil */ }) {
+                    Icon(Icons.Rounded.AccountCircle, null, tint = Color.Black, modifier = Modifier.size(32.dp))
                 }
             }
         }
@@ -146,29 +133,45 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            // --- BARRE DE RECHERCHE AFFINÉE (PLUS PROPRE) ---
+            // --- SEARCHBAR UNIFIÉE (ADRESSE + ENSEIGNES) ---
             item {
-                Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp)) {
+                Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)) {
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp)
-                            .shadow(4.dp, RoundedCornerShape(26.dp)),
-                        placeholder = { Text("Lidl, Carrefour, Auchan...", color = Color.Gray, fontSize = 14.sp) },
-                        leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null, tint = Color.Black, modifier = Modifier.size(20.dp)) },
+                            .height(54.dp)
+                            .shadow(6.dp, RoundedCornerShape(27.dp)),
+                        placeholder = { 
+                            Text(
+                                text = "🏠 $currentAddress", 
+                                maxLines = 1, 
+                                overflow = TextOverflow.Ellipsis,
+                                fontSize = 14.sp,
+                                color = Color.Gray
+                            ) 
+                        },
+                        leadingIcon = { 
+                            IconButton(onClick = { showAddressSheet = true }) {
+                                Icon(Icons.Rounded.LocationOn, null, tint = Color(0xFF00C853), modifier = Modifier.size(22.dp))
+                            }
+                        },
                         trailingIcon = {
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(end = 4.dp)) {
                                 if (searchQuery.isNotEmpty()) {
-                                    IconButton(onClick = { searchQuery = "" }, modifier = Modifier.size(32.dp)) { Icon(Icons.Rounded.Close, null, tint = Color.Gray, modifier = Modifier.size(18.dp)) }
+                                    IconButton(onClick = { searchQuery = "" }, modifier = Modifier.size(32.dp)) { 
+                                        Icon(Icons.Rounded.Close, null, tint = Color.Gray, modifier = Modifier.size(18.dp)) 
+                                    }
                                 }
                                 VerticalDivider(modifier = Modifier.height(20.dp).padding(horizontal = 4.dp), color = Color.LightGray.copy(alpha = 0.5f))
-                                IconButton(onClick = { /* Filtres */ }, modifier = Modifier.size(32.dp)) { Icon(Icons.Rounded.Tune, null, tint = Color.DarkGray, modifier = Modifier.size(18.dp)) }
+                                IconButton(onClick = { /* Filtres */ }, modifier = Modifier.size(32.dp)) { 
+                                    Icon(Icons.Rounded.Tune, null, tint = Color.DarkGray, modifier = Modifier.size(18.dp)) 
+                                }
                             }
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(26.dp),
+                        shape = RoundedCornerShape(27.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = Color.White,
                             unfocusedContainerColor = Color.White,
@@ -180,9 +183,10 @@ fun HomeScreen(
                 }
             }
 
+            // --- SECTION ENSEIGNES ---
             item {
                 Spacer(modifier = Modifier.height(8.dp))
-                SectionHeader(if (searchQuery.isEmpty()) "Nos Enseignes" else "Résultats pour \"$searchQuery\"")
+                SectionHeader(if (searchQuery.isEmpty()) "Nos Enseignes" else "Enseignes trouvées")
                 
                 if (filteredBrands.isEmpty()) {
                     Text("Aucune enseigne trouvée", modifier = Modifier.padding(24.dp).fillMaxWidth(), textAlign = TextAlign.Center, color = Color.Gray)
@@ -198,9 +202,10 @@ fun HomeScreen(
                 }
             }
 
+            // --- SECTION RAYONS ---
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-                SectionHeader("Parcourir les rayons")
+                SectionHeader("Rayons")
                 Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                     categories.chunked(3).forEach { rowItems ->
                         Row(modifier = Modifier.fillMaxWidth()) {
@@ -240,8 +245,8 @@ fun AddressSearchContent(onAddressSelected: (String) -> Unit) {
     val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxWidth().padding(24.dp).navigationBarsPadding()) {
-        Text("Adresse de livraison", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-        Text("Saisissez votre adresse pour voir les offres locales", color = Color.Gray, modifier = Modifier.padding(bottom = 20.dp))
+        Text("Où souhaitez-vous être livré ?", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+        Text("Saisissez votre adresse pour localiser les enseignes", color = Color.Gray, modifier = Modifier.padding(bottom = 20.dp))
 
         OutlinedTextField(
             value = query,
@@ -250,7 +255,7 @@ fun AddressSearchContent(onAddressSelected: (String) -> Unit) {
                 scope.launch { suggestions = searchHomeAddresses(it) }
             },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Tapez votre adresse ici...") },
+            placeholder = { Text("Tapez une ville ou une adresse...") },
             leadingIcon = { Icon(Icons.Rounded.Search, null, tint = Color(0xFF00C853)) },
             trailingIcon = { if(query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Rounded.Cancel, null, tint = Color.LightGray) } },
             shape = RoundedCornerShape(16.dp),
@@ -259,7 +264,6 @@ fun AddressSearchContent(onAddressSelected: (String) -> Unit) {
 
         Spacer(Modifier.height(20.dp))
 
-        // Suggestions d'adresses en temps réel
         AnimatedVisibility(visible = suggestions.isNotEmpty()) {
             Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), color = Color(0xFFF8F9FA), border = BorderStroke(1.dp, Color(0xFFEEEEEE))) {
                 Column {
