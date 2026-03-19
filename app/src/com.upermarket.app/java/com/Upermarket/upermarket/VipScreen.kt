@@ -1,7 +1,10 @@
 package com.Upermarket.upermarket
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -10,10 +13,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -27,236 +31,220 @@ import androidx.compose.ui.unit.sp
 fun VipScreen(authManager: AuthManager) {
     val user = authManager.getCurrentUser()
     val isVip = user?.isVip ?: false
+    
+    val infiniteTransition = rememberInfiniteTransition(label = "hologram")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = -5f,
+        targetValue = 5f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = "rotation"
+    )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA))
+            .background(Color(0xFF0A0A0A)) // Fond noir profond pro
             .verticalScroll(rememberScrollState())
     ) {
-        // --- HEADER PREMIUM ---
+        // --- HEADER FUTURISTE ---
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(Color(0xFF1A1A1A), Color(0xFF2D2D2D))
-                    )
-                )
-                .padding(top = 48.dp, bottom = 32.dp, start = 24.dp, end = 24.dp)
+                .padding(top = 60.dp, bottom = 20.dp, start = 24.dp, end = 24.dp)
         ) {
             Column {
+                Surface(
+                    color = Color(0xFFFFD700).copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(50.dp),
+                    border = BorderStroke(1.dp, Color(0xFFFFD700).copy(alpha = 0.3f))
+                ) {
+                    Text(
+                        text = "✧ UPERMARKET ELITE 2026",
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                        color = Color(0xFFFFD700),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 1.5.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "ESPACE MEMBRE",
-                    color = Color(0xFFFFD700),
-                    style = MaterialTheme.typography.labelLarge,
-                    letterSpacing = 2.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Bonjour, ${user?.name ?: "Membre"}",
+                    text = "L'expérience\nsans limites.",
                     color = Color.White,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
+                    lineHeight = 40.sp,
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.ExtraBold
                 )
             }
         }
 
-        // --- CARTE DE FIDÉLITÉ ---
-        Card(
+        // --- CARTE HOLOGRAPHIQUE DYNAMIQUE ---
+        Box(
             modifier = Modifier
                 .padding(24.dp)
                 .fillMaxWidth()
-                .height(200.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                .height(220.dp)
+                .rotate(rotation) // Effet de flottement
+                .shadow(30.dp, RoundedCornerShape(28.dp), ambientColor = Color(0xFFFFD700), spotColor = Color(0xFFFFD700))
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Box(modifier = Modifier.fillMaxSize().background(
-                    Brush.linearGradient(
-                        colors = listOf(Color.White, Color(0xFFFDFCF0))
-                    )
-                ))
-                
-                Column(
-                    modifier = Modifier.padding(24.dp).fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Icon(Icons.Rounded.AutoAwesome, null, tint = Color(0xFFFFD700))
-                        Text("UPERMARKET GOLD", fontWeight = FontWeight.Black, color = Color.LightGray)
-                    }
-                    
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Rounded.QrCode2, null, modifier = Modifier.size(80.dp), tint = Color.Black)
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column {
-                            Text("ID: ${user?.uid?.take(8)?.uppercase() ?: "INVITÉ"}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-                            Text(if(isVip) "MEMBRE VIP" else "MEMBRE STANDARD", fontWeight = FontWeight.Bold, color = if(isVip) Color(0xFF00C853) else Color.Black)
-                        }
-                    }
-                }
-            }
-        }
-
-        // --- SECTION : GARDER MA PLACE (PREMIER PLAN) ---
-        Card(
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .fillMaxWidth()
-                .shadow(12.dp, RoundedCornerShape(24.dp)),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            border = BorderStroke(1.dp, Color(0xFFFFD700).copy(alpha = 0.3f))
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(Color(0xFFFFFDE7), Color.White)
-                        )
-                    )
-                    .padding(20.dp)
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                shape = RoundedCornerShape(28.dp),
+                color = Color(0xFF1E1E1E),
+                border = BorderStroke(1.5.dp, Brush.linearGradient(listOf(Color(0xFFFFD700), Color(0xFFB8860B), Color(0xFFFFD700))))
             ) {
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Rounded.WorkspacePremium, null, tint = Color(0xFFB8860B), modifier = Modifier.size(24.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            "EXCLUSIF",
-                            color = Color(0xFFB8860B),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 1.sp
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // Effet de texture grainée / brillante
+                    Box(modifier = Modifier.fillMaxSize().background(
+                        Brush.radialGradient(
+                            colors = listOf(Color(0xFFFFD700).copy(alpha = 0.15f), Color.Transparent),
+                            radius = 600f
                         )
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        "Garder ma place au premier plan",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    Text(
-                        "Soyez mis en avant dans la communauté pour seulement 1$.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.DarkGray,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Button(
-                        onClick = { /* Action 1$ */ },
-                        modifier = Modifier.fillMaxWidth().height(44.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A1A))
+                    ))
+                    
+                    Column(
+                        modifier = Modifier.padding(28.dp).fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("RÉSERVER POUR 1$", fontWeight = FontWeight.ExtraBold, color = Color.White, fontSize = 12.sp)
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(
-            "Vos Avantages",
-            modifier = Modifier.padding(horizontal = 24.dp),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            BenefitItem(Icons.Rounded.Percent, "Réductions exclusives", "Jusqu'à -15% sur vos rayons favoris.")
-            BenefitItem(Icons.Rounded.Bolt, "Scan & Go Ultra-Rapide", "Évitez l'attente en caisse grâce au scan pro.")
-            BenefitItem(Icons.Rounded.LocalActivity, "Événements VIP", "Accès prioritaire aux nouvelles collections.")
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // --- BOUTON D'ACTION PRINCIPAL ---
-        Box(modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth()) {
-            if (!isVip) {
-                Button(
-                    onClick = { /* Action rejoindre */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .shadow(12.dp, RoundedCornerShape(20.dp)),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    ),
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFF1A1A1A), Color(0xFF424242))
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Rounded.Star, null, tint = Color(0xFFFFD700))
-                            Spacer(Modifier.width(12.dp))
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Rounded.AllInclusive, null, tint = Color(0xFFFFD700), modifier = Modifier.size(32.dp))
+                            Text("GOLD PASS", fontWeight = FontWeight.Black, color = Color.White.copy(alpha = 0.4f), letterSpacing = 2.sp)
+                        }
+                        
+                        Column {
                             Text(
-                                "REJOINDRE L'ESPACE MEMBRE",
+                                text = user?.name?.uppercase() ?: "INVITÉ SPÉCIAL",
+                                color = Color.White,
+                                fontSize = 22.sp,
                                 fontWeight = FontWeight.Black,
-                                fontSize = 16.sp,
-                                letterSpacing = 1.sp,
-                                color = Color.White
+                                letterSpacing = 1.sp
+                            )
+                            Text(
+                                text = "MEMBRE DEPUIS 2025",
+                                color = Color(0xFFFFD700).copy(alpha = 0.7f),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold
                             )
                         }
+
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
+                            Text(
+                                text = "•••• •••• •••• ${user?.uid?.take(4) ?: "0000"}",
+                                color = Color.White.copy(alpha = 0.6f),
+                                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                fontSize = 16.sp
+                            )
+                            Icon(Icons.Rounded.Nfc, null, tint = Color.White.copy(alpha = 0.3f))
+                        }
                     }
                 }
-            } else {
-                OutlinedButton(
-                    onClick = { /* Gérer abonnement */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    border = BorderStroke(2.dp, Color.Black)
+            }
+        }
+
+        // --- SECTION : OFFRE EXCLUSIVE 1$ ---
+        Surface(
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(28.dp),
+            color = Color(0xFF151515),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
+        ) {
+            Row(
+                modifier = Modifier.padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier.size(56.dp).background(Color(0xFFFFD700), CircleShape),
+                    contentAlignment = Alignment.Center
                 ) {
+                    Icon(Icons.Rounded.PriorityHigh, null, tint = Color.Black, modifier = Modifier.size(28.dp))
+                }
+                Spacer(Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("BOOST DE VISIBILITÉ", color = Color(0xFFFFD700), fontWeight = FontWeight.Black, fontSize = 12.sp)
+                    Text("Garder ma place au premier plan", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text("Devenez prioritaire pour 1$", color = Color.Gray, fontSize = 13.sp)
+                }
+                Surface(
+                    modifier = Modifier.clickable { },
+                    color = Color.White,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("ACTIVER", modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), fontWeight = FontWeight.Black, fontSize = 11.sp, color = Color.Black)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // --- GRID D'AVANTAGES PRO ---
+        Text(
+            "Privilèges Elite",
+            modifier = Modifier.padding(horizontal = 24.dp),
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.White,
+            fontWeight = FontWeight.ExtraBold
+        )
+        
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+            ModernBenefitItem(Icons.Rounded.Bolt, "Priorité Absolue", "Zéro attente en caisse et livraison éclair.")
+            ModernBenefitItem(Icons.Rounded.AutoGraph, "Cashback 5%", "Cumulez de l'argent sur chaque achat.")
+            ModernBenefitItem(Icons.Rounded.SupportAgent, "Conciergerie 24/7", "Un assistant personnel pour vos courses.")
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // --- BOUTON D'ACTION MAGNÉTIQUE ---
+        Box(modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth()) {
+            Button(
+                onClick = { /* Action */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.Black)
+                    Spacer(Modifier.width(12.dp))
                     Text(
-                        "GÉRER MON ESPACE MEMBRE",
-                        color = Color.Black,
+                        if(isVip) "ACCÉDER AU DASHBOARD" else "DEVENIR MEMBRE ELITE",
                         fontWeight = FontWeight.Black,
-                        letterSpacing = 1.sp
+                        fontSize = 16.sp,
+                        color = Color.Black
                     )
                 }
             }
         }
         
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(60.dp))
     }
 }
 
 @Composable
-fun BenefitItem(icon: ImageVector, title: String, subtitle: String) {
+fun ModernBenefitItem(icon: ImageVector, title: String, subtitle: String) {
     Row(
-        modifier = Modifier.padding(vertical = 12.dp),
+        modifier = Modifier.padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(
-            modifier = Modifier.size(48.dp),
-            shape = CircleShape,
-            color = Color.White,
-            shadowElevation = 2.dp
+        Box(
+            modifier = Modifier
+                .size(52.dp)
+                .background(Color.White.copy(alpha = 0.05f), RoundedCornerShape(16.dp))
+                .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(16.dp)),
+            contentAlignment = Alignment.Center
         ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(icon, null, tint = Color(0xFF00C853), modifier = Modifier.size(24.dp))
-            }
+            Icon(icon, null, tint = Color(0xFFFFD700), modifier = Modifier.size(26.dp))
         }
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(20.dp))
         Column {
-            Text(title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
-            Text(subtitle, color = Color.Gray, style = MaterialTheme.typography.bodySmall)
+            Text(title, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 16.sp)
+            Text(subtitle, color = Color.Gray, fontSize = 13.sp, lineHeight = 18.sp)
         }
     }
 }

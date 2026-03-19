@@ -3,14 +3,19 @@ package com.Upermarket.upermarket
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -43,7 +48,6 @@ import java.net.URLEncoder
 
 data class Brand(val name: String, val logoRes: Int, val storeUrl: String)
 
-// --- SERVICE API ADRESSE (RECHERCHE PRO) ---
 suspend fun searchHomeAddresses(query: String): List<String> = withContext(Dispatchers.IO) {
     if (query.length < 3) return@withContext emptyList()
     try {
@@ -86,32 +90,37 @@ fun HomeScreen(
         Brand("Lidl", R.drawable.lidl_logo_svg, "https://www.lidl.fr"),
         Brand("Carrefour", R.drawable.carrefour_logo_1982, "https://www.carrefour.fr"),
         Brand("E.Leclerc", R.drawable.e_leclerc_logo_svg, "https://www.e.leclerc"),
-        Brand("Auchan", R.drawable.logo_auchan__2015__svg, "https://www.auchan.fr"),
-        Brand("Intermarché", R.drawable.nouveau_logo_intermarche, "https://www.intermarche.com"),
+        Brand("Auchan", R.drawable.logo_auchan_, "https://www.auchan.fr"),
+        Brand("Intermarché", R.drawable.breve29741, "https://www.intermarche.com"),
         Brand("Casino", R.drawable.casino_supermarket_logo, "https://www.casinosupermarches.fr"),
         Brand("Netto", R.drawable.french_netto_logo_2019_svg, "https://www.netto.fr"),
-        Brand("Monoprix", R.drawable.monoprix, "https://www.monoprix.fr"),
-        Brand("Franprix", R.drawable.franprix, "https://www.franprix.fr")
+        Brand("Monoprix", R.drawable._00625192, "https://www.monoprix.fr"),
+        Brand("Franprix", R.drawable.franprix_2026, "https://www.franprix.fr")
     )
 
-    val filteredBrands = remember(searchQuery) {
-        if (searchQuery.isEmpty()) allBrands
-        else allBrands.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    // AUTO-SCROLL LOGIC
+    val brandListState = rememberLazyListState()
+    LaunchedEffect(Unit) {
+        while (true) {
+            brandListState.animateScrollBy(
+                value = 500f,
+                animationSpec = tween(durationMillis = 5000, easing = LinearEasing)
+            )
+        }
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color(0xFFF8F9FA),
         topBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White)
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { /* Profil */ }) { }
+                Text("Upermarket", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
             }
         }
     ) { padding ->
@@ -124,63 +133,34 @@ fun HomeScreen(
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(54.dp)
-                            .shadow(6.dp, RoundedCornerShape(27.dp)),
-                        placeholder = { 
-                            Text(
-                                text = "🏠 $currentAddress", 
-                                maxLines = 1, 
-                                overflow = TextOverflow.Ellipsis,
-                                fontSize = 14.sp,
-                                color = Color.Gray
-                            ) 
-                        },
+                        modifier = Modifier.fillMaxWidth().height(54.dp).shadow(6.dp, RoundedCornerShape(27.dp)),
+                        placeholder = { Text("🏠 $currentAddress", maxLines = 1, overflow = TextOverflow.Ellipsis, color = Color.Gray) },
                         leadingIcon = { 
                             IconButton(onClick = { showAddressSheet = true }) {
-                                Icon(Icons.Rounded.LocationOn, null, tint = Color(0xFF00C853), modifier = Modifier.size(22.dp))
-                            }
-                        },
-                        trailingIcon = {
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(end = 4.dp)) {
-                                if (searchQuery.isNotEmpty()) {
-                                    IconButton(onClick = { searchQuery = "" }, modifier = Modifier.size(32.dp)) { 
-                                        Icon(Icons.Rounded.Close, null, tint = Color.Gray, modifier = Modifier.size(18.dp)) 
-                                    }
-                                }
-                                VerticalDivider(modifier = Modifier.height(20.dp).padding(horizontal = 4.dp), color = Color.LightGray.copy(alpha = 0.5f))
-                                IconButton(onClick = { /* Filtres */ }, modifier = Modifier.size(32.dp)) { 
-                                    Icon(Icons.Rounded.Tune, null, tint = Color.DarkGray, modifier = Modifier.size(18.dp)) 
-                                }
+                                Icon(Icons.Rounded.LocationOn, null, tint = Color(0xFF00C853))
                             }
                         },
                         singleLine = true,
                         shape = RoundedCornerShape(27.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent,
-                            cursorColor = Color.Black
-                        )
+                        colors = OutlinedTextFieldDefaults.colors(focusedContainerColor = Color.White, unfocusedContainerColor = Color.White, focusedBorderColor = Color.Transparent, unfocusedBorderColor = Color.Transparent)
                     )
                 }
             }
 
             item {
                 Spacer(modifier = Modifier.height(8.dp))
-                SectionHeader(if (searchQuery.isEmpty()) "Nos Enseignes" else "Enseignes trouvées")
+                SectionHeader("Nos Enseignes")
                 
-                if (filteredBrands.isEmpty()) {
-                    Text("Aucune enseigne trouvée", modifier = Modifier.padding(24.dp).fillMaxWidth(), textAlign = TextAlign.Center, color = Color.Gray)
-                } else {
-                    LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        items(filteredBrands) { brand ->
-                            BrandCard(brand) {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(brand.storeUrl))
-                                context.startActivity(intent)
-                            }
+                LazyRow(
+                    state = brandListState,
+                    contentPadding = PaddingValues(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items(allBrands + allBrands + allBrands) { brand ->
+                        BrandCard(brand) {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(brand.storeUrl))
+                            context.startActivity(intent)
                         }
                     }
                 }
@@ -203,12 +183,7 @@ fun HomeScreen(
         }
 
         if (showAddressSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showAddressSheet = false },
-                containerColor = Color.White,
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-            ) {
+            ModalBottomSheet(onDismissRequest = { showAddressSheet = false }, containerColor = Color.White) {
                 AddressSearchContent(onAddressSelected = { currentAddress = it; showAddressSheet = false })
             }
         }
@@ -223,54 +198,32 @@ fun AddressSearchContent(onAddressSelected: (String) -> Unit) {
 
     Column(modifier = Modifier.fillMaxWidth().padding(24.dp).navigationBarsPadding()) {
         Text("Où souhaitez-vous être livré ?", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-        Text("Saisissez votre adresse pour localiser les enseignes", color = Color.Gray, modifier = Modifier.padding(bottom = 20.dp))
-
+        Spacer(Modifier.height(20.dp))
         OutlinedTextField(
             value = query,
             onValueChange = { query = it; scope.launch { suggestions = searchHomeAddresses(it) } },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Tapez une ville ou une adresse...") },
             leadingIcon = { Icon(Icons.Rounded.Search, null, tint = Color(0xFF00C853)) },
-            trailingIcon = { if(query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Rounded.Cancel, null, tint = Color.LightGray) } },
-            shape = RoundedCornerShape(16.dp),
-            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Color(0xFF00C853))
+            shape = RoundedCornerShape(16.dp)
         )
-
         Spacer(Modifier.height(20.dp))
-
-        AnimatedVisibility(visible = suggestions.isNotEmpty()) {
-            Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), color = Color(0xFFF8F9FA), border = BorderStroke(1.dp, Color(0xFFEEEEEE))) {
-                Column {
-                    suggestions.forEach { suggestion ->
-                        Row(modifier = Modifier.fillMaxWidth().clickable { onAddressSelected(suggestion) }.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Rounded.LocationOn, null, tint = Color(0xFF00C853), modifier = Modifier.size(20.dp))
-                            Spacer(Modifier.width(16.dp))
-                            Text(text = suggestion, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        }
-                        HorizontalDivider(color = Color.White.copy(alpha = 0.5f))
-                    }
-                }
-            }
-        }
-
-        if (suggestions.isEmpty()) {
-            Row(modifier = Modifier.fillMaxWidth().clickable { }.padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Rounded.GpsFixed, null, tint = Color(0xFF00C853))
+        suggestions.forEach { suggestion ->
+            Row(modifier = Modifier.fillMaxWidth().clickable { onAddressSelected(suggestion) }.padding(16.dp)) {
+                Icon(Icons.Rounded.LocationOn, null, tint = Color(0xFF00C853))
                 Spacer(Modifier.width(16.dp))
-                Text("Utiliser ma position actuelle", fontWeight = FontWeight.Bold, color = Color(0xFF00C853))
+                Text(suggestion)
             }
         }
-        Spacer(Modifier.height(32.dp))
     }
 }
 
 @Composable
 fun BrandCard(brand: Brand, onClick: () -> Unit) {
     Surface(
-        modifier = Modifier.size(100.dp).padding(4.dp).shadow(8.dp, RoundedCornerShape(24.dp)),
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+        modifier = Modifier.size(90.dp).padding(4.dp).shadow(12.dp, CircleShape, spotColor = Color.Black.copy(alpha = 0.3f)),
+        shape = CircleShape,
+        color = Color.White
     ) {
         Box(modifier = Modifier.fillMaxSize().clickable(onClick = onClick).padding(16.dp), contentAlignment = Alignment.Center) {
             Image(painter = painterResource(id = brand.logoRes), contentDescription = brand.name, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Fit)
@@ -288,11 +241,11 @@ fun ModernCategoryItem(category: Category, modifier: Modifier = Modifier, onClic
             Image(painter = painterResource(id = category.imageRes), contentDescription = category.name, modifier = Modifier.fillMaxSize().clip(CircleShape), contentScale = ContentScale.Crop)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = category.name, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onBackground)
+        Text(text = category.name, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp), textAlign = TextAlign.Center)
     }
 }
 
 @Composable
 fun SectionHeader(title: String) {
-    Text(text = title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, letterSpacing = 0.5.sp), modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.onBackground)
+    Text(text = title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold, fontSize = 18.sp), modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
 }

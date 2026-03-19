@@ -122,6 +122,7 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.androidx.foundation)
+    implementation(libs.foundation)
     val camerax_version = "1.5.1"
     implementation("androidx.camera:camera-core:$camerax_version")
     implementation("androidx.camera:camera-camera2:$camerax_version")
