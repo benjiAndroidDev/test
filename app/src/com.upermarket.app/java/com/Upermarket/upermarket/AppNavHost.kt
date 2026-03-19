@@ -3,8 +3,10 @@ package com.Upermarket.upermarket
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 
 @Composable
 fun AppNavHost(
@@ -38,6 +40,25 @@ fun AppNavHost(
         }
         composable(Destination.SETTINGS.route) {
             SettingsScreen(authManager, false, {})
+        }
+        
+        // Route pour les produits par catégorie
+        composable(
+            route = "category_products/{categoryName}/{categoryTag}",
+            arguments = listOf(
+                navArgument("categoryName") { type = NavType.StringType },
+                navArgument("categoryTag") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val categoryName = backStackEntry.arguments?.getString("categoryName") ?: ""
+            val categoryTag = backStackEntry.arguments?.getString("categoryTag") ?: ""
+            CategoryProductsScreen(
+                categoryName = categoryName,
+                categoryTag = categoryTag,
+                favoritesViewModel = favoritesViewModel,
+                cartViewModel = cartViewModel,
+                navController = navController
+            )
         }
     }
 }

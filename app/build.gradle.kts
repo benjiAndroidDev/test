@@ -79,6 +79,15 @@ android {
             exclude(group = "xpp3", module = "xpp3")
         }
     }
+
+    lint {
+        baseline = file("lint-baseline.xml")
+        checkReleaseBuilds = false
+        abortOnError = false
+        checkDependencies = true
+        ignoreWarnings = true
+        disable += "MissingDefaultResource"
+    }
 }
 
 dependencies {

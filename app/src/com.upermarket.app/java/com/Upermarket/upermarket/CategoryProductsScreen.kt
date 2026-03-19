@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,20 +36,18 @@ fun CategoryProductsScreen(
     var selectedProduct by remember { mutableStateOf<Product?>(null) }
     var selectedFilter by remember { mutableStateOf("Tous") }
 
-    // Définition des filtres par catégorie
     val subFilters = remember(categoryName) {
         when (categoryName) {
-            "Viandes" -> listOf("Tous", "Poulet", "Boeuf", "Dinde", "Steak", "Saucisse", "Jambon")
-            "Boissons" -> listOf("Tous", "Eau", "Jus", "Soda", "Lait", "Café", "Thé")
-            "Laiterie" -> listOf("Tous", "Yaourt", "Fromage", "Lait", "Beurre", "Crème")
+            "Fruits" -> listOf("Tous", "Pomme", "Banane", "Orange", "Fraise", "Raisin", "Kiwi", "Ananas", "Mangue", "Pêche", "Melon")
+            "Légumes" -> listOf("Tous", "Carotte", "Salade", "Tomate", "Pomme de terre", "Oignon", "Courgette", "Poivron", "Aubergine", "Avocat")
+            "Viandes" -> listOf("Tous", "Poulet", "Boeuf", "Steak", "Escalope", "Cuisse", "Dinde", "Porc", "Haché", "Saucisse", "Jambon")
+            "Boissons" -> listOf("Tous", "Eau", "Jus", "Soda", "Cola", "Thé glacé", "Café", "Thé", "Bière", "Vin")
+            "Laiterie" -> listOf("Tous", "Yaourt", "Fromage", "Lait", "Beurre", "Crème", "Emmental", "Camembert", "Mozzarella")
             "Épicerie" -> listOf("Tous", "Pâtes", "Riz", "Sauce", "Conserve", "Gâteaux")
-            "Légumes" -> listOf("Tous", "Carotte", "Salade", "Tomate", "Pomme de terre", "Oignon")
-            "Fruits" -> listOf("Tous", "Pomme", "Banane", "Orange", "Fraise", "Raisin")
             else -> listOf("Tous", "Bio", "Nutri-Score A")
         }
     }
 
-    // Filtrage local des produits
     val filteredProducts = remember(products, selectedFilter) {
         if (selectedFilter == "Tous") products
         else {
@@ -60,10 +58,13 @@ fun CategoryProductsScreen(
         }
     }
 
+    // CHARGEMENT PROGRESSIF ET CACHÉ
     LaunchedEffect(categoryTag) {
-        isLoading = true
-        products = searchManager.searchProducts(query = categoryName, categoryTag = categoryTag)
-        isLoading = false
+        searchManager.searchProductsFlow(query = categoryName, categoryTag = categoryTag)
+            .collectLatest { updatedList ->
+                products = updatedList
+                isLoading = false // On arrête le loader dès qu'on a les premiers produits
+            }
     }
 
     Scaffold(
@@ -86,7 +87,6 @@ fun CategoryProductsScreen(
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding).background(Color(0xFFF8F9FA))) {
             
-            // Barre de filtres horizontale (Chips)
             LazyRow(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -113,20 +113,8 @@ fun CategoryProductsScreen(
             }
 
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                if (isLoading) {
+                if (isLoading && products.isEmpty()) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color(0xFF00C853))
-                } else if (filteredProducts.isEmpty()) {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("Aucun produit trouvé", color = Color.Gray)
-                        if (selectedFilter != "Tous") {
-                            TextButton(onClick = { selectedFilter = "Tous" }) {
-                                Text("Réinitialiser le filtre", color = Color(0xFF00C853))
-                            }
-                        }
-                    }
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),

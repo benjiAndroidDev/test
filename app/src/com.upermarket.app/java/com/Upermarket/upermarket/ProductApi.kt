@@ -1,5 +1,6 @@
 package com.Upermarket.upermarket
 
+import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.Retrofit
@@ -9,9 +10,19 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.http.Path
 import java.util.concurrent.TimeUnit
+
+@Serializable
+data class Category(
+    val name: String, 
+    val imageRes: Int, 
+    val color: Long, // Utiliser Long pour la sérialisation si besoin, mais ici c'est pour le code
+    val apiTag: String
+) {
+    // Helper pour récupérer la Color Compose
+    val composeColor: Color get() = Color(color)
+}
 
 @Serializable
 data class SearchResponse(
@@ -32,7 +43,8 @@ data class ProductResponse(
 @Serializable
 data class Product(
     val code: String? = null,
-    @SerialName("product_name") val name: String? = "Produit inconnu",
+    @SerialName("product_name") val name: String? = null,
+    @SerialName("product_name_fr") val nameFr: String? = null,
     @SerialName("image_front_url") val imageUrl: String? = null,
     val brands: String? = null,
     @SerialName("nutriscore_grade") val nutriscore: String? = null,
@@ -43,7 +55,9 @@ data class Product(
     @SerialName("ingredients_text") val ingredients: String? = null,
     @SerialName("additives_n") val additivesCount: Int? = 0,
     @SerialName("nutrient_levels") val levels: NutrientLevels? = null
-)
+) {
+    val displayName: String get() = name ?: nameFr ?: "Produit inconnu"
+}
 
 @Serializable
 data class NutrientLevels(
@@ -60,15 +74,15 @@ interface OpenFoodFactsApi {
         @Query("categories_tags") categoryTag: String? = null,
         @Query("lc") lang: String = "fr",
         @Query("cc") country: String = "fr",
-        @Query("fields") fields: String = "code,product_name,image_front_url,brands,nutriscore_grade,ecoscore_grade,nova_group,quantity,categories,ingredients_text,additives_n,nutrient_levels",
-        @Query("page_size") pageSize: Int = 50,
+        @Query("fields") fields: String = "code,product_name,product_name_fr,image_front_url,brands,nutriscore_grade,ecoscore_grade,nova_group,quantity,categories,ingredients_text,additives_n,nutrient_levels",
+        @Query("page_size") pageSize: Int = 100,
         @Query("page") page: Int = 1
     ): SearchResponse
 
     @GET("api/v2/product/{barcode}")
     suspend fun getProductByBarcode(
         @Path("barcode") barcode: String,
-        @Query("fields") fields: String = "code,product_name,image_front_url,brands,nutriscore_grade,ecoscore_grade,nova_group,quantity,categories,ingredients_text,additives_n,nutrient_levels"
+        @Query("fields") fields: String = "code,product_name,product_name_fr,image_front_url,brands,nutriscore_grade,ecoscore_grade,nova_group,quantity,categories,ingredients_text,additives_n,nutrient_levels"
     ): ProductResponse
 
     companion object {

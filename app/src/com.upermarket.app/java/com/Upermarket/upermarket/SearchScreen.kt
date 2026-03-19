@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,8 +62,10 @@ fun SearchScreen(
         if (!initialQuery.isNullOrBlank()) {
             query = initialQuery
             isLoading = true
-            results = searchManager.searchProducts(query)
-            isLoading = false
+            searchManager.searchProductsFlow(query = query).collectLatest {
+                results = it
+                isLoading = false
+            }
         }
     }
 
@@ -89,8 +91,10 @@ fun SearchScreen(
                 if (query.isNotBlank()) {
                     isLoading = true
                     scope.launch {
-                        results = searchManager.searchProducts(query)
-                        isLoading = false
+                        searchManager.searchProductsFlow(query = query).collectLatest {
+                            results = it
+                            isLoading = false
+                        }
                     }
                 }
             }),
@@ -125,11 +129,11 @@ fun SearchScreen(
             }
         }
 
-        if (isLoading) {
+        if (isLoading && results.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = Color(0xFF00C853))
             }
-        } else if (filteredResults.isEmpty() && query.isNotEmpty()) {
+        } else if (filteredResults.isEmpty() && query.isNotEmpty() && !isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Aucun résultat pour \"$selectedFilter\"", color = Color.Gray)
             }

@@ -3,68 +3,93 @@ package com.Upermarket.upermarket
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 class MegaProductSearchManager(private val context: Context) {
 
     private val offApi = OpenFoodFactsApi.create()
 
-    suspend fun searchProducts(query: String? = null, categoryTag: String? = null): List<Product> = withContext(Dispatchers.IO) {
-        val results = mutableListOf<Product>()
-        val isMeatRayon = categoryTag?.contains("meats", ignoreCase = true) == true
-        val isCharcuterieRayon = categoryTag?.contains("charcuteries", ignoreCase = true) == true
+    companion object {
+        private val memoryCache = mutableMapOf<String, List<Product>>()
+    }
 
-        try {
-            coroutineScope {
-                val searches = mutableListOf<Deferred<SearchResponse>>()
-
-                // STRATÉGIE "MENU SUR MESURE" POUR LA BOUCHERIE / CHARCUTERIE
-                when {
-                    isMeatRayon -> {
-                        Log.d("MegaSearch", "Stratégie 'Menu du Boucher' activée")
-                        val meatTerms = listOf("poulet rôti", "steak haché", "escalope de dinde", "cuisse de poulet", "filet de poulet", "boeuf", "saucisse")
-                        meatTerms.forEach { term ->
-                            searches.add(async { try { offApi.searchProducts(terms = term, categoryTag = categoryTag, pageSize = 25) } catch(e:Exception) { SearchResponse() } })
-                        }
-                        // On ajoute une touche de jambon, mais de façon contrôlée
-                        searches.add(async { try { offApi.searchProducts(terms = "jambon", categoryTag = categoryTag, pageSize = 10) } catch(e:Exception) { SearchResponse() } })
-                    }
-
-                    isCharcuterieRayon -> {
-                        Log.d("MegaSearch", "Stratégie 'Charcuterie' activée")
-                        val charcuterieTerms = listOf("saucisson", "jambon cru", "rosette", "chorizo", "pâté de campagne")
-                        charcuterieTerms.forEach { term ->
-                            searches.add(async { try { offApi.searchProducts(terms = term, categoryTag = categoryTag, pageSize = 20) } catch(e:Exception) { SearchResponse() } })
-                        }
-                        searches.add(async { try { offApi.searchProducts(terms = "jambon blanc", categoryTag = categoryTag, pageSize = 15) } catch(e:Exception) { SearchResponse() } })
-                    }
-
-                    else -> {
-                        // Stratégie classique pour tous les autres rayons
-                        if (!categoryTag.isNullOrBlank()) {
-                            searches.add(async { try { offApi.searchProducts(categoryTag = categoryTag, pageSize = 50, page = 1) } catch(e:Exception) { SearchResponse() } })
-                            searches.add(async { try { offApi.searchProducts(categoryTag = categoryTag, pageSize = 50, page = 2) } catch(e:Exception) { SearchResponse() } })
-                        }
-                        if (!query.isNullOrBlank()) {
-                             searches.add(async { try { offApi.searchProducts(terms = query, pageSize = 50) } catch(e:Exception) { SearchResponse() } })
-                        }
-                    }
-                }
-
-                // On collecte tous les résultats
-                searches.forEach { deferred ->
-                    try {
-                        val response = deferred.await()
-                        response.products?.let { results.addAll(it) }
-                    } catch (e: Exception) { Log.e("MegaSearch", "Une sous-recherche a échoué", e) }
+    // Préchargement massif en arrière-plan
+    fun prefetchCategories(categories: List<Category>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            categories.forEach { cat ->
+                val cacheKey = "${cat.name}_${cat.apiTag}"
+                if (!memoryCache.containsKey(cacheKey)) {
+                    Log.d("MegaSearch", "Préchargement de ${cat.name}...")
+                    searchProductsFlow(cat.name, cat.apiTag).collect { }
                 }
             }
-        } catch (e: Exception) {
-            Log.e("MegaSearch", "Erreur critique de recherche", e)
+        }
+    }
+
+    fun searchProductsFlow(query: String? = null, categoryTag: String? = null): Flow<List<Product>> = channelFlow {
+        val cacheKey = "${query}_${categoryTag}"
+        
+        // 1. Envoi immédiat du cache si disponible
+        if (memoryCache.containsKey(cacheKey)) {
+            send(memoryCache[cacheKey]!!)
         }
 
-        // Nettoyage final et mélange pour un affichage parfait
-        results.filter { !it.name.isNullOrBlank() && it.name != "Produit inconnu" }
-               .distinctBy { it.code ?: it.name }
-               .shuffled()
-    }
+        val allProducts = mutableSetOf<Product>()
+        val tag = categoryTag?.lowercase() ?: ""
+
+        // Liste exhaustive pour saturer les rayons (500+ produits)
+        val searchTerms = when {
+            tag.contains("fruits") -> listOf("fruits", "pomme", "banane", "orange", "fraise", "raisin", "kiwi", "ananas", "mangue", "poire", "abricot", "citron", "framboise", "myrtille", "melon", "pastèque", "pêche", "cerise", "prune", "mûre", "figue", "grenade", "litchi")
+            tag.contains("vegetables") -> listOf("légumes", "carotte", "tomate", "salade", "pomme de terre", "oignon", "courgette", "poivron", "aubergine", "haricot", "brocoli", "chou", "concombre", "ail", "épinard", "champignon", "avocat", "asperge", "artichaut", "radis", "poireau", "potiron", "navet")
+            tag.contains("meats") -> listOf("viandes", "poulet", "boeuf", "steak", "escalope", "cuisse", "dinde", "porc", "veau", "agneau", "canard", "haché", "brochette", "lardons", "saucisse", "merguez", "rôti", "filet", "magret", "pilon", "travers", "jambon")
+            tag.contains("beverages") -> listOf("boissons", "eau", "jus", "soda", "cola", "limonade", "thé glacé", "sirop", "café", "thé", "bière", "vin", "champagne", "énergisante", "lait de coco", "smoothie", "nectar", "grenadine", "menthe", "vittel", "evian", "volvic")
+            tag.contains("dairies") -> listOf("laiterie", "yaourt", "fromage", "lait", "beurre", "crème", "emmental", "camembert", "petit suisse", "comté", "mozzarella", "skyr", "chèvre", "roquefort", "brie", "mimolette", "gorgonzola", "feta", "ricotta", "mascarpone", "parmesan")
+            else -> listOf(query ?: "", tag)
+        }
+
+        suspend fun fetchAndEmit(term: String?, page: Int) {
+            try {
+                val response = offApi.searchProducts(
+                    terms = if (term == tag) null else term, 
+                    categoryTag = categoryTag, 
+                    pageSize = 100, 
+                    page = page
+                )
+                response.products?.let { products ->
+                    val validOnes = products.filter { !it.name.isNullOrBlank() || !it.nameFr.isNullOrBlank() }
+                    if (validOnes.isNotEmpty()) {
+                        synchronized(allProducts) {
+                            allProducts.addAll(validOnes)
+                        }
+                        val currentList = synchronized(allProducts) { 
+                            allProducts.toList().distinctBy { it.code ?: it.name ?: it.nameFr }.shuffled() 
+                        }
+                        memoryCache[cacheKey] = currentList
+                        send(currentList)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("MegaSearch", "Erreur page $page pour $term", e)
+            }
+        }
+
+        coroutineScope {
+            // STRATÉGIE DE SATURATION
+            // 1. On lance 10 pages génériques pour remplir le rayon globalement
+            launch {
+                (1..10).forEach { page ->
+                    launch { fetchAndEmit(null, page) }
+                }
+            }
+
+            // 2. On lance des recherches ciblées pour chaque aliment (5 pages chacun)
+            searchTerms.forEach { term ->
+                launch {
+                    (1..5).forEach { page ->
+                        launch { fetchAndEmit(term, page) }
+                    }
+                }
+            }
+        }
+    }.flowOn(Dispatchers.IO)
 }

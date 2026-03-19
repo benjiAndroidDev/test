@@ -18,3 +18,10 @@
 -keepattributes *Annotation*
 -keep class sun.misc.Unsafe { *; }
 -keep class com.google.gson.stream.** { *; }
+
+# Fix R8 errors for firebase-crashlytics-buildtools
+-dontwarn afu.org.checkerframework.**
+-dontwarn com.google.firebase.crashlytics.buildtools.reloc.**
+-dontwarn javax.servlet.**
+-dontwarn org.ietf.jgss.**
+-dontwarn org.checkerframework.**

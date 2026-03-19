@@ -41,13 +41,6 @@ import org.json.JSONObject
 import java.net.URL
 import java.net.URLEncoder
 
-data class Category(
-    val name: String, 
-    val imageRes: Int, 
-    val color: Color,
-    val apiTag: String
-)
-
 data class Brand(val name: String, val logoRes: Int, val storeUrl: String)
 
 // --- SERVICE API ADRESSE (RECHERCHE PRO) ---
@@ -78,15 +71,15 @@ fun HomeScreen(
     var showAddressSheet by remember { mutableStateOf(false) }
 
     val categories = listOf(
-        Category("Fruits", R.drawable.fruits, Color(0xFFFFE0E0), "en:fruits"),
-        Category("Légumes", R.drawable.legumes, Color(0xFFE0FFE0), "en:vegetables"),
-        Category("Viandes", R.drawable.viandes, Color(0xFFFFE0B2), "en:meats"),
-        Category("Boissons", R.drawable.boissons, Color(0xFFE1F5FE), "en:beverages"),
-        Category("Épicerie", R.drawable.epicerie, Color(0xFFF3E5F5), "en:groceries"),
-        Category("Surgelés", R.drawable.surgele, Color(0xFFE0F7FA), "en:frozen-foods"),
-        Category("Frais", R.drawable.produit_frais, Color(0xFFFFF9C4), "en:fresh-foods"),
-        Category("Laiterie", R.drawable.produits_laitiers, Color(0xFFF5F5F5), "en:dairies"),
-        Category("Charcut.", R.drawable.charcuterie, Color(0xFFFBE9E7), "en:charcuteries")
+        Category("Fruits", R.drawable.fruits, 0xFFFFE0E0L, "en:fruits"),
+        Category("Légumes", R.drawable.legumes, 0xFFE0FFE0L, "en:vegetables"),
+        Category("Viandes", R.drawable.viandes, 0xFFFFE0B2L, "en:meats"),
+        Category("Boissons", R.drawable.boissons, 0xFFE1F5FEL, "en:beverages"),
+        Category("Épicerie", R.drawable.epicerie, 0xFFF3E5F5L, "en:groceries"),
+        Category("Surgelés", R.drawable.surgele, 0xFFE0F7FAL, "en:frozen-foods"),
+        Category("Frais", R.drawable.produit_frais, 0xFFFFF9C4L, "en:fresh-foods"),
+        Category("Laiterie", R.drawable.produits_laitiers, 0xFFF5F5F5L, "en:dairies"),
+        Category("Charcut.", R.drawable.charcuterie, 0xFFFBE9E7L, "en:charcuteries")
     )
 
     val allBrands = listOf(
@@ -110,7 +103,6 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            // --- HEADER ÉPURÉ AVEC LOGO ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -119,13 +111,7 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    "Upermarket",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black, color = Color.Black)
-                )
-                IconButton(onClick = { /* Profil */ }) {
-                    Icon(Icons.Rounded.AccountCircle, null, tint = Color.Black, modifier = Modifier.size(32.dp))
-                }
+                IconButton(onClick = { /* Profil */ }) { }
             }
         }
     ) { padding ->
@@ -133,7 +119,6 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            // --- SEARCHBAR UNIFIÉE (ADRESSE + ENSEIGNES) ---
             item {
                 Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)) {
                     OutlinedTextField(
@@ -183,7 +168,6 @@ fun HomeScreen(
                 }
             }
 
-            // --- SECTION ENSEIGNES ---
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 SectionHeader(if (searchQuery.isEmpty()) "Nos Enseignes" else "Enseignes trouvées")
@@ -202,7 +186,6 @@ fun HomeScreen(
                 }
             }
 
-            // --- SECTION RAYONS ---
             item {
                 Spacer(modifier = Modifier.height(24.dp))
                 SectionHeader("Rayons")
@@ -219,7 +202,6 @@ fun HomeScreen(
             }
         }
 
-        // --- SHEET SÉLECTEUR D'ADRESSE PRO ---
         if (showAddressSheet) {
             ModalBottomSheet(
                 onDismissRequest = { showAddressSheet = false },
@@ -227,12 +209,7 @@ fun HomeScreen(
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
             ) {
-                AddressSearchContent(
-                    onAddressSelected = {
-                        currentAddress = it
-                        showAddressSheet = false
-                    }
-                )
+                AddressSearchContent(onAddressSelected = { currentAddress = it; showAddressSheet = false })
             }
         }
     }
@@ -250,10 +227,7 @@ fun AddressSearchContent(onAddressSelected: (String) -> Unit) {
 
         OutlinedTextField(
             value = query,
-            onValueChange = { 
-                query = it
-                scope.launch { suggestions = searchHomeAddresses(it) }
-            },
+            onValueChange = { query = it; scope.launch { suggestions = searchHomeAddresses(it) } },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Tapez une ville ou une adresse...") },
             leadingIcon = { Icon(Icons.Rounded.Search, null, tint = Color(0xFF00C853)) },
@@ -268,10 +242,7 @@ fun AddressSearchContent(onAddressSelected: (String) -> Unit) {
             Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), color = Color(0xFFF8F9FA), border = BorderStroke(1.dp, Color(0xFFEEEEEE))) {
                 Column {
                     suggestions.forEach { suggestion ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth().clickable { onAddressSelected(suggestion) }.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Row(modifier = Modifier.fillMaxWidth().clickable { onAddressSelected(suggestion) }.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Rounded.LocationOn, null, tint = Color(0xFF00C853), modifier = Modifier.size(20.dp))
                             Spacer(Modifier.width(16.dp))
                             Text(text = suggestion, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -283,13 +254,12 @@ fun AddressSearchContent(onAddressSelected: (String) -> Unit) {
         }
 
         if (suggestions.isEmpty()) {
-            Row(modifier = Modifier.fillMaxWidth().clickable { /* TODO: GPS */ }.padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier.fillMaxWidth().clickable { }.padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Rounded.GpsFixed, null, tint = Color(0xFF00C853))
                 Spacer(Modifier.width(16.dp))
                 Text("Utiliser ma position actuelle", fontWeight = FontWeight.Bold, color = Color(0xFF00C853))
             }
         }
-        
         Spacer(Modifier.height(32.dp))
     }
 }
@@ -314,7 +284,7 @@ fun ModernCategoryItem(category: Category, modifier: Modifier = Modifier, onClic
         modifier = modifier.padding(4.dp).clip(RoundedCornerShape(16.dp)).clickable(onClick = onClick).padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(modifier = Modifier.size(75.dp).background(category.color, CircleShape).padding(15.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.size(75.dp).background(category.composeColor, CircleShape).padding(15.dp), contentAlignment = Alignment.Center) {
             Image(painter = painterResource(id = category.imageRes), contentDescription = category.name, modifier = Modifier.fillMaxSize().clip(CircleShape), contentScale = ContentScale.Crop)
         }
         Spacer(modifier = Modifier.height(8.dp))

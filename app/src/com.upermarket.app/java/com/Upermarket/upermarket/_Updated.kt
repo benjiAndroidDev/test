@@ -44,7 +44,6 @@ import com.example.upermarket.R
 
 // ==================== AUTH SYSTEM ====================
 
-
 sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
@@ -60,8 +59,7 @@ class AuthManager(private val context: Context) {
     private var db: FirebaseFirestore? = null
     var authState by mutableStateOf<AuthState>(AuthState.Idle); private set
 
-    // États de l'interface gardés ici pour survivre aux recompositions
-    var authMode by mutableStateOf("PHONE") // "PHONE" ou "OTP"
+    var authMode by mutableStateOf("PHONE") 
     var phoneInput by mutableStateOf("")
     var otpInput by mutableStateOf("")
 
@@ -93,19 +91,10 @@ class AuthManager(private val context: Context) {
 
     private fun fetchUserData(uid: String) {
         val currentUser = auth?.currentUser
-        val fallbackUser = User(
-            uid = uid,
-            name = currentUser?.displayName ?: "Utilisateur",
-            email = currentUser?.email ?: ""
-        )
-
-        // Transition immédiate pour ne pas bloquer l'utilisateur
+        val fallbackUser = User(uid = uid, name = currentUser?.displayName ?: "Utilisateur", email = currentUser?.email ?: "")
         authState = AuthState.Authenticated(fallbackUser)
-
         db?.collection("users")?.document(uid)?.get()?.addOnSuccessListener { doc ->
-            doc.toObject(User::class.java)?.let {
-                authState = AuthState.Authenticated(it)
-            }
+            doc.toObject(User::class.java)?.let { authState = AuthState.Authenticated(it) }
         }
     }
 
@@ -113,15 +102,8 @@ class AuthManager(private val context: Context) {
         authState = AuthState.Loading
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth?.signInWithCredential(credential)?.addOnSuccessListener { res ->
-            val user = res.user
-            if (user != null) {
-                val u = User(user.uid, user.displayName ?: "", user.email ?: "")
-                db?.collection("users")?.document(u.uid)?.set(u)
-                fetchUserData(user.uid)
-            }
-        }?.addOnFailureListener {
-            authState = AuthState.Error("Erreur Google: ${it.localizedMessage}")
-        }
+            res.user?.let { fetchUserData(it.uid) }
+        }?.addOnFailureListener { authState = AuthState.Error("Erreur Google: ${it.localizedMessage}") }
     }
 
     fun sendOtp(phone: String, activity: android.app.Activity) {
@@ -131,43 +113,30 @@ class AuthManager(private val context: Context) {
             .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(activity)
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                    signInWithPhoneCredential(credential)
-                }
-                override fun onVerificationFailed(e: FirebaseException) {
-                    Log.e("AuthManager", "SMS failed", e)
-                    authState = AuthState.Error("SMS: ${e.localizedMessage}")
-                }
+                override fun onVerificationCompleted(credential: PhoneAuthCredential) { signInWithPhoneCredential(credential) }
+                override fun onVerificationFailed(e: FirebaseException) { authState = AuthState.Error("SMS: ${e.localizedMessage}") }
                 override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
                     verificationId = id
-                    authMode = "OTP" // BASCULEMENT SUR L'ÉCRAN CODE
+                    authMode = "OTP"
                     authState = AuthState.NotAuthenticated
                 }
-            })
-            .build()
+            }).build()
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
     fun verifyOtp(code: String) {
-        val id = verificationId ?: return
-        val credential = PhoneAuthProvider.getCredential(id, code)
-        signInWithPhoneCredential(credential)
+        verificationId?.let { signInWithPhoneCredential(PhoneAuthProvider.getCredential(it, code)) }
     }
 
     private fun signInWithPhoneCredential(credential: PhoneAuthCredential) {
         authState = AuthState.Loading
         auth?.signInWithCredential(credential)?.addOnSuccessListener { res ->
             res.user?.let { fetchUserData(it.uid) }
-        }?.addOnFailureListener {
-            authState = AuthState.Error("Code invalide: ${it.localizedMessage}")
-        }
+        }?.addOnFailureListener { authState = AuthState.Error("Code invalide: ${it.localizedMessage}") }
     }
 
     fun signOut() {
         auth?.signOut()
-        authMode = "PHONE"
-        phoneInput = ""
-        otpInput = ""
         authState = AuthState.NotAuthenticated
     }
 
@@ -192,10 +161,22 @@ fun MainAppContent(
 ) {
     val context = LocalContext.current
     val user = authManager.getCurrentUser()
-    val favoritesManager = remember(user?.uid) { FavoritesManager(context, user?.uid ?: "default") }
-    val favoritesViewModel = remember(user?.uid) { FavoritesViewModel(favoritesManager) }
+    val favoritesViewModel = remember(user?.uid) { FavoritesViewModel(FavoritesManager(context, user?.uid ?: "default")) }
     val scanHistoryManager = remember(user?.uid) { ScanHistoryManager(context, user?.uid ?: "default") }
     val navController = rememberNavController()
+    val megaSearchManager = remember { MegaProductSearchManager(context) }
+
+    // PRECHARGEMENT MASQUÉ AU DÉMARRAGE
+    LaunchedEffect(Unit) {
+        val categories = listOf(
+            Category("Fruits", R.drawable.fruits, 0xFFFFE0E0L, "en:fruits"),
+            Category("Légumes", R.drawable.legumes, 0xFFE0FFE0L, "en:vegetables"),
+            Category("Viandes", R.drawable.viandes, 0xFFFFE0B2L, "en:meats"),
+            Category("Boissons", R.drawable.boissons, 0xFFE1F5FEL, "en:beverages"),
+            Category("Laiterie", R.drawable.produits_laitiers, 0xFFF5F5F5L, "en:dairies")
+        )
+        megaSearchManager.prefetchCategories(categories)
+    }
 
     var showHistorySheet by remember { mutableStateOf(false) }
     var showCartSheet by remember { mutableStateOf(false) }
@@ -213,44 +194,27 @@ fun MainAppContent(
                 title = { },
                 navigationIcon = {
                     Row {
-                        IconButton(onClick = { showBudgetManagerSheet = true }) {
-                            Icon(Icons.Rounded.Tune, null, tint = Color(0xFF00C853))
-                        }
-                        IconButton(onClick = { showShoppingListSheet = true }) {
-                            Icon(Icons.Rounded.ChecklistRtl, null, tint = Color(0xFF1976D2))
-                        }
+                        IconButton(onClick = { showBudgetManagerSheet = true }) { Icon(Icons.Rounded.Tune, null, tint = Color(0xFF00C853)) }
+                        IconButton(onClick = { showShoppingListSheet = true }) { Icon(Icons.Rounded.ChecklistRtl, null, tint = Color(0xFF1976D2)) }
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showHistorySheet = true }) {
-                        Icon(Icons.Rounded.History, null)
-                    }
+                    IconButton(onClick = { showHistorySheet = true }) { Icon(Icons.Rounded.History, null) }
                     IconButton(onClick = { showFavoritesSheet = true }) {
-                        BadgedBox(badge = {
-                            if (favoritesViewModel.favoriteCount > 0) Badge { Text(favoritesViewModel.favoriteCount.toString()) }
-                        }) {
+                        BadgedBox(badge = { if (favoritesViewModel.favoriteCount > 0) Badge { Text(favoritesViewModel.favoriteCount.toString()) } }) {
                             val isFav = favoritesViewModel.favoriteCount > 0
                             Icon(if (isFav) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder, null, tint = if (isFav) Color.Red else MaterialTheme.colorScheme.onSurface)
                         }
                     }
                     IconButton(onClick = { showCartSheet = true }) {
-                        BadgedBox(badge = {
-                            if (cartViewModel.itemCount > 0) Badge { Text(cartViewModel.itemCount.toString()) }
-                        }) {
-                            Icon(Icons.Rounded.ShoppingCart, null)
-                        }
+                        BadgedBox(badge = { if (cartViewModel.itemCount > 0) Badge { Text(cartViewModel.itemCount.toString()) } }) { Icon(Icons.Rounded.ShoppingCart, null) }
                     }
-                    IconButton(onClick = { showProfileSheet = true }) {
-                        Icon(Icons.Rounded.Person, null, modifier = Modifier.size(32.dp))
-                    }
+                    IconButton(onClick = { showProfileSheet = true }) { Icon(Icons.Rounded.Person, null, modifier = Modifier.size(32.dp)) }
                 }
             )
         },
         bottomBar = {
-            NavigationBar(
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 0.dp
-            ) {
+            NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
                 destinations.forEachIndexed { index, dest ->
                     val isSelected = selectedItem == index
                     NavigationBarItem(
@@ -267,84 +231,33 @@ fun MainAppContent(
                         },
                         icon = { 
                             if (dest == Destination.CHEF) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.uperchef),
-                                    contentDescription = dest.label,
-                                    modifier = Modifier.size(56.dp).clip(CircleShape)
-                                )
+                                Image(painter = painterResource(id = R.drawable.uperchef), contentDescription = dest.label, modifier = Modifier.size(56.dp).clip(CircleShape))
                             } else {
-                                Icon(
-                                    imageVector = if (isSelected) dest.selectedIcon else dest.unselectedIcon,
-                                    contentDescription = dest.label,
-                                    tint = Color.Black // Couleur forcée à noir
-                                )
+                                Icon(imageVector = if (isSelected) dest.selectedIcon else dest.unselectedIcon, contentDescription = dest.label, tint = Color.Black)
                             }
                         },
                         label = null,
                         alwaysShowLabel = false,
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color.Black,
-                            unselectedIconColor = Color.Black,
-                            indicatorColor = Color.Transparent // Supprime l'effet de pilule de couleur
-                        )
+                        colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, unselectedIconColor = Color.Black, indicatorColor = Color.Transparent)
                     )
                 }
             }
         }
     ) { padding ->
-        AppNavHost(
-            navController = navController,
-            startDestination = Destination.HOME.route,
-            authManager = authManager,
-            cartViewModel = cartViewModel,
-            favoritesViewModel = favoritesViewModel,
-            scanHistoryManager = scanHistoryManager,
-            modifier = Modifier.padding(padding)
-        )
+        AppNavHost(navController, Destination.HOME.route, authManager, cartViewModel, favoritesViewModel, scanHistoryManager, Modifier.padding(padding))
 
-        if (showCartSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showCartSheet = false },
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                containerColor = MaterialTheme.colorScheme.surface
-            ) { CartSheet(cartViewModel, favoritesViewModel) }
+        if (showCartSheet) ModalBottomSheet(onDismissRequest = { showCartSheet = false }) { CartSheet(cartViewModel, favoritesViewModel) }
+        if (showFavoritesSheet) ModalBottomSheet(onDismissRequest = { showFavoritesSheet = false }) { FavoritesSheet(favoritesViewModel, cartViewModel) }
+        if (showProfileSheet) ModalBottomSheet(onDismissRequest = { showProfileSheet = false }) {
+            ProfileScreen(authManager, 
+                onNavigateToVip = { showProfileSheet = false; selectedItem = destinations.indexOf(Destination.VIP); navController.navigate(Destination.VIP.route) },
+                onNavigateToFavorites = { showProfileSheet = false; showFavoritesSheet = true },
+                onNavigateToSettings = { showProfileSheet = false; selectedItem = destinations.indexOf(Destination.SETTINGS); navController.navigate(Destination.SETTINGS.route) },
+                onDismiss = { showProfileSheet = false })
         }
-
-        if (showFavoritesSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showFavoritesSheet = false },
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                containerColor = MaterialTheme.colorScheme.surface
-            ) { FavoritesSheet(favoritesViewModel, cartViewModel) }
-        }
-
-        if (showProfileSheet) {
-            ModalBottomSheet(onDismissRequest = { showProfileSheet = false }, containerColor = MaterialTheme.colorScheme.surface) {
-                ProfileScreen(
-                    authService = authManager,
-                    onNavigateToVip = { showProfileSheet = false; selectedItem = destinations.indexOf(Destination.VIP); navController.navigate(Destination.VIP.route) },
-                    onNavigateToFavorites = { showProfileSheet = false; showFavoritesSheet = true },
-                    onNavigateToSettings = { showProfileSheet = false; selectedItem = destinations.indexOf(Destination.SETTINGS); navController.navigate(Destination.SETTINGS.route) },
-                    onDismiss = { showProfileSheet = false }
-                )
-            }
-        }
-
-        if (showShoppingListSheet) {
-            ModalBottomSheet(onDismissRequest = { showShoppingListSheet = false }, containerColor = MaterialTheme.colorScheme.surface) { ShoppingListSheet { showShoppingListSheet = false } }
-        }
-
-        if (showBudgetManagerSheet) {
-            ModalBottomSheet(onDismissRequest = { showBudgetManagerSheet = false }, containerColor = MaterialTheme.colorScheme.surface) { BudgetManagerSheet({ showBudgetManagerSheet = false }, cartViewModel, context) }
-        }
-
-        if (showHistorySheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showHistorySheet = false },
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                containerColor = MaterialTheme.colorScheme.surface
-            ) { ScanHistorySheet(scanHistoryManager, favoritesViewModel, cartViewModel) }
-        }
+        if (showShoppingListSheet) ModalBottomSheet(onDismissRequest = { showShoppingListSheet = false }) { ShoppingListSheet { showShoppingListSheet = false } }
+        if (showBudgetManagerSheet) ModalBottomSheet(onDismissRequest = { showBudgetManagerSheet = false }) { BudgetManagerSheet({ showBudgetManagerSheet = false }, cartViewModel, context) }
+        if (showHistorySheet) ModalBottomSheet(onDismissRequest = { showHistorySheet = false }) { ScanHistorySheet(scanHistoryManager, favoritesViewModel, cartViewModel) }
     }
 }
 
@@ -353,7 +266,6 @@ fun MainApp() {
     val context = LocalContext.current.applicationContext
     val authManager = remember { AuthManager(context) }
     var isDarkMode by remember { mutableStateOf(false) }
-
     UpermarketTheme(darkTheme = isDarkMode) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             when (val state = authManager.authState) {
@@ -457,7 +369,7 @@ class FavoritesManager(context: Context, private val uid: String) {
     fun removeFavorite(p: Product) {
         val f = getFavorites().toMutableList()
         val id = p.code ?: "${p.name}_${p.brands}"
-        f.removeAll { (it.code ?: "${it.name}_${p.brands}") == id }
+        f.removeAll { (it.code ?: "${it.name}_${it.brands}") == id }
         prefs.edit().putString("favorite_products", gson.toJson(f)).apply()
     }
 }
