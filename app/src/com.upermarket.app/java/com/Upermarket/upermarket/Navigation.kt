@@ -41,13 +41,6 @@ enum class Destination(
         "UperChef",
         "UperChef"
     ),
-    VIP(
-        "vip",
-        Icons.Rounded.WorkspacePremium,
-        Icons.Outlined.WorkspacePremium,
-        "Membre",
-        "Devenir membre"
-    ),
     SETTINGS(
         "settings",
         Icons.Rounded.Settings,

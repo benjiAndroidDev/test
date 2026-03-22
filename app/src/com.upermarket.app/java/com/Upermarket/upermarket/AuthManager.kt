@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ProfileScreen(
     authService: AuthManager,
-    onNavigateToVip: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onDismiss: () -> Unit
@@ -78,16 +77,6 @@ fun ProfileScreen(
                 subtitle = "Retrouvez vos produits préférés"
             ) {
                 onNavigateToFavorites()
-                onDismiss()
-            }
-
-            ProfileMenuItem(
-                icon = Icons.Rounded.Star,
-                title = "Espace Membre",
-                subtitle = if (user.isVip) "Gérer votre accès Premium" else "Débloquer les avantages",
-                color = if (user.isVip) Color(0xFFFFA500) else Color(0xFF00C853)
-            ) {
-                onNavigateToVip()
                 onDismiss()
             }
 

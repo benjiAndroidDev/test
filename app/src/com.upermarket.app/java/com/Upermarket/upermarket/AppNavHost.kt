@@ -35,9 +35,6 @@ fun AppNavHost(
         composable(Destination.CHEF.route) {
             ChefScreen()
         }
-        composable(Destination.VIP.route) {
-            VipScreen(authManager)
-        }
         composable(Destination.SETTINGS.route) {
             SettingsScreen(authManager, false, {})
         }

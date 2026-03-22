@@ -129,21 +129,79 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
             item {
-                Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)) {
-                    OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        modifier = Modifier.fillMaxWidth().height(54.dp).shadow(6.dp, RoundedCornerShape(27.dp)),
-                        placeholder = { Text("🏠 $currentAddress", maxLines = 1, overflow = TextOverflow.Ellipsis, color = Color.Gray) },
-                        leadingIcon = { 
-                            IconButton(onClick = { showAddressSheet = true }) {
-                                Icon(Icons.Rounded.LocationOn, null, tint = Color(0xFF00C853))
+                // --- MODERN SEARCH BAR PRO ---
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .shadow(12.dp, RoundedCornerShape(30.dp), ambientColor = Color(0xFF00C853).copy(alpha = 0.2f), spotColor = Color(0xFF00C853).copy(alpha = 0.2f)),
+                        shape = RoundedCornerShape(30.dp),
+                        color = Color.White,
+                        border = BorderStroke(1.dp, Color(0xFFEEEEEE))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // ICON MAP DANS LA SEARCH BAR
+                            Surface(
+                                onClick = { /* Action Map */ },
+                                modifier = Modifier.size(44.dp),
+                                shape = CircleShape,
+                                color = Color(0xFFF5F5F5)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.map),
+                                        contentDescription = "Carte",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
                             }
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(27.dp),
-                        colors = OutlinedTextFieldDefaults.colors(focusedContainerColor = Color.White, unfocusedContainerColor = Color.White, focusedBorderColor = Color.Transparent, unfocusedBorderColor = Color.Transparent)
-                    )
+                            
+                            Spacer(Modifier.width(12.dp))
+                            
+                            // TEXT INTERACTIF ADRESSE
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { showAddressSheet = true }
+                            ) {
+                                Text(
+                                    "Livraison à",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.Gray,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    currentAddress,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color.Black
+                                )
+                            }
+                            
+                            // BOUTON RECHERCHE ICONE
+                            Surface(
+                                modifier = Modifier.size(44.dp),
+                                shape = CircleShape,
+                                color = Color(0xFF00C853)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(Icons.Rounded.Search, null, tint = Color.White, modifier = Modifier.size(22.dp))
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

@@ -15,26 +15,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.*
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import androidx.lifecycle.*
-import androidx.navigation.NavType
 import androidx.navigation.compose.*
-import androidx.navigation.navArgument
 import com.Upermarket.upermarket.ui.theme.UpermarketTheme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape
@@ -98,12 +86,29 @@ class AuthManager(private val context: Context) {
         }
     }
 
+    fun setError(message: String) {
+        authState = AuthState.Error(message)
+    }
+
     fun signInWithGoogle(idToken: String) {
+        if (idToken.isBlank()) {
+            setError("Erreur: Token Google vide")
+            return
+        }
+        Log.d("AuthManager", "signInWithGoogle: Tentative Firebase")
         authState = AuthState.Loading
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth?.signInWithCredential(credential)?.addOnSuccessListener { res ->
-            res.user?.let { fetchUserData(it.uid) }
-        }?.addOnFailureListener { authState = AuthState.Error("Erreur Google: ${it.localizedMessage}") }
+        auth?.signInWithCredential(credential)
+            ?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("AuthManager", "Firebase: Connexion réussie")
+                    task.result?.user?.let { fetchUserData(it.uid) }
+                } else {
+                    val errorMsg = task.exception?.localizedMessage ?: "Erreur inconnue"
+                    Log.e("AuthManager", "Firebase: Échec de la connexion - $errorMsg")
+                    setError("Détail Firebase: $errorMsg")
+                }
+            }
     }
 
     fun sendOtp(phone: String, activity: android.app.Activity) {
@@ -193,7 +198,7 @@ fun MainAppContent(
             CenterAlignedTopAppBar(
                 title = { },
                 navigationIcon = {
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(onClick = { showBudgetManagerSheet = true }) { Icon(Icons.Rounded.Tune, null, tint = Color(0xFF00C853)) }
                         IconButton(onClick = { showShoppingListSheet = true }) { Icon(Icons.Rounded.ChecklistRtl, null, tint = Color(0xFF1976D2)) }
                     }
@@ -250,7 +255,6 @@ fun MainAppContent(
         if (showFavoritesSheet) ModalBottomSheet(onDismissRequest = { showFavoritesSheet = false }) { FavoritesSheet(favoritesViewModel, cartViewModel) }
         if (showProfileSheet) ModalBottomSheet(onDismissRequest = { showProfileSheet = false }) {
             ProfileScreen(authManager, 
-                onNavigateToVip = { showProfileSheet = false; selectedItem = destinations.indexOf(Destination.VIP); navController.navigate(Destination.VIP.route) },
                 onNavigateToFavorites = { showProfileSheet = false; showFavoritesSheet = true },
                 onNavigateToSettings = { showProfileSheet = false; selectedItem = destinations.indexOf(Destination.SETTINGS); navController.navigate(Destination.SETTINGS.route) },
                 onDismiss = { showProfileSheet = false })
