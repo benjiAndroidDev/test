@@ -73,6 +73,7 @@ fun HomeScreen(
     var searchQuery by remember { mutableStateOf("") }
     var currentAddress by remember { mutableStateOf("12 Rue de la Paix, Paris") }
     var showAddressSheet by remember { mutableStateOf(false) }
+    var showStorePicker by remember { mutableStateOf(false) }
 
     val categories = listOf(
         Category("Fruits", R.drawable.fruits, 0xFFFFE0E0L, "en:fruits"),
@@ -152,7 +153,7 @@ fun HomeScreen(
                         ) {
                             // ICON MAP DANS LA SEARCH BAR
                             Surface(
-                                onClick = { /* Action Map */ },
+                                onClick = { showStorePicker = true },
                                 modifier = Modifier.size(44.dp),
                                 shape = CircleShape,
                                 color = Color(0xFFF5F5F5)
@@ -243,6 +244,22 @@ fun HomeScreen(
         if (showAddressSheet) {
             ModalBottomSheet(onDismissRequest = { showAddressSheet = false }, containerColor = Color.White) {
                 AddressSearchContent(onAddressSelected = { currentAddress = it; showAddressSheet = false })
+            }
+        }
+
+        if (showStorePicker) {
+            ModalBottomSheet(
+                onDismissRequest = { showStorePicker = false },
+                containerColor = Color.White,
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            ) {
+                StorePickerSheet(
+                    onStoreSelected = { store ->
+                        currentAddress = store.name
+                        showStorePicker = false
+                    },
+                    onDismiss = { showStorePicker = false }
+                )
             }
         }
     }

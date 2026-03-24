@@ -20,9 +20,12 @@ android {
         applicationId = "com.example.upermarket"
         minSdk = 26
         targetSdk = 35 
-        versionCode = 9 // On incrémente pour la nouvelle soumission
+        versionCode = 9
         versionName = "1.8"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // On définit une valeur par défaut pour MAPS_API_KEY si elle n'est pas dans local.properties
+        buildConfigField("String", "MAPS_API_KEY", "\"YOUR_API_KEY_HERE\"")
     }
 
     sourceSets {
@@ -34,11 +37,7 @@ android {
     }
 
     signingConfigs {
-        // CONFIGURATION DE LA CLÉ DE PRODUCTION
-        // Remplissez ces champs avec vos vraies infos pour le Play Store
         create("release") {
-            // Remplacez par le chemin absolu vers votre fichier .jks
-            // Exemple : file("/home/androiddev/Documents/mon_upermarket_key.jks")
             storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore") 
             storePassword = "android"
             keyAlias = "androiddebugkey"
@@ -48,15 +47,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true // Activé pour la production (plus pro)
+            isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // ATTENTION : Utilisez la config 'release' ici
-            // Pour l'instant je laisse debug pour que tu puisses build, 
-            // mais change-le en 'signingConfigs.getByName("release")' quand tes infos seront prêtes.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -71,6 +67,7 @@ android {
     buildFeatures {
         compose = true
         viewBinding = true
+        buildConfig = true
     }
 
     configurations {
@@ -123,11 +120,19 @@ dependencies {
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.androidx.foundation)
     implementation(libs.foundation)
+    
     val camerax_version = "1.5.1"
     implementation("androidx.camera:camera-core:$camerax_version")
     implementation("androidx.camera:camera-camera2:$camerax_version")
     implementation("androidx.camera:camera-lifecycle:$camerax_version")
     implementation("androidx.camera:camera-view:$camerax_version")
+    
+    // GOOGLE MAPS & PLACES
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.android.libraries.places:places:4.1.0")
+    implementation("com.google.maps.android:maps-compose:6.2.1")
+
     implementation(libs.guava)
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation(libs.retrofit)
