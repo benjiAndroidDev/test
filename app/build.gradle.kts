@@ -127,11 +127,12 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$camerax_version")
     implementation("androidx.camera:camera-view:$camerax_version")
     
-    // GOOGLE MAPS & PLACES
-    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    // GOOGLE PLACES & LOCATION (On garde pour la géoloc)
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.google.android.libraries.places:places:4.1.0")
-    implementation("com.google.maps.android:maps-compose:6.2.1")
+    
+    // OPEN STREET MAP (OSMDROID)
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
 
     implementation(libs.guava)
     implementation("com.google.android.gms:play-services-auth:20.7.0")

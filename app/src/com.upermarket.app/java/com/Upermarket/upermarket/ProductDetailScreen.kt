@@ -5,6 +5,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -14,11 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -42,173 +45,200 @@ fun ProductDetailSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = Color.White,
-        dragHandle = { BottomSheetDefaults.DragHandle(color = Color.LightGray) }
+        dragHandle = null // On gère notre propre drag handle pour plus de style
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.9f)
+                .fillMaxHeight(0.92f)
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 32.dp)
         ) {
-            // --- ACTION BAR (FAVORITE) ---
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Surface(
-                    onClick = onToggleFavorite, 
-                    modifier = Modifier.size(48.dp),
-                    shape = CircleShape, 
-                    color = Color(0xFFF5F5F5)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            if (isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
-                            null, tint = if (isFavorite) Color.Red else Color.DarkGray
-                        )
-                    }
-                }
-            }
-
-            // --- IMAGE PRODUIT ---
-            Box(
-                modifier = Modifier.fillMaxWidth().height(260.dp).padding(horizontal = 24.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            // --- HEADER AVEC IMAGE ET OVERLAY ---
+            Box(modifier = Modifier.fillMaxWidth().height(320.dp)) {
+                // Background Gradient léger
+                Box(modifier = Modifier.fillMaxSize().background(
+                    Brush.verticalGradient(listOf(Color(0xFFF8F9FA), Color.White))
+                ))
+                
                 Image(
                     painter = rememberAsyncImagePainter(product.imageUrl),
                     contentDescription = product.name,
-                    modifier = Modifier.fillMaxHeight().clip(RoundedCornerShape(24.dp)),
+                    modifier = Modifier.fillMaxSize().padding(40.dp),
                     contentScale = ContentScale.Fit
                 )
-            }
 
-            // --- INFOS PRINCIPALES ---
-            Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
-                Text(
-                    text = product.name ?: "Produit inconnu",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black, letterSpacing = (-0.5).sp)
+                // Drag Handle Custom
+                Box(
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .size(40.dp, 4.dp)
+                        .background(Color.LightGray.copy(0.5f), CircleShape)
+                        .align(Alignment.TopCenter)
                 )
-                Text(
-                    text = "${product.brands ?: "Upermarket"} • ${product.quantity ?: "Format standard"}",
-                    style = MaterialTheme.typography.titleMedium, 
-                    color = Color.Gray
-                )
-            }
 
-            // --- SCORES (NUTRI/ECO) ---
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                ScoreCard("NUTRI-SCORE", product.nutriscore?.uppercase() ?: "?", getNutriColor(product.nutriscore), Modifier.weight(1f))
-                ScoreCard("ECO-SCORE", product.ecoscore?.uppercase() ?: "?", getEcoColor(product.ecoscore), Modifier.weight(1f))
-            }
-
-            // --- SECTION ANALYSE NUTRITIONNELLE ---
-            if (product.levels != null) {
-                DetailSectionHeader("Analyse nutritionnelle")
+                // Actions flottantes (Back & Favorite)
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    NutrientBadge("Sucre", product.levels.sugars ?: "inconnu")
-                    NutrientBadge("Sel", product.levels.salt ?: "inconnu")
-                    NutrientBadge("Gras", product.levels.fat ?: "inconnu")
-                }
-            }
-
-            // --- SECTION INGRÉDIENTS (MODERNE) ---
-            DetailSectionHeader("Ingrédients")
-            Surface(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-                color = Color(0xFFF8F9FA),
-                shape = RoundedCornerShape(20.dp),
-                border = BorderStroke(1.dp, Color(0xFFEEEEEE))
-            ) {
-                Text(
-                    text = product.ingredients ?: "La liste des ingrédients n'est pas disponible pour ce produit.",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    lineHeight = 22.sp,
-                    color = Color.DarkGray
-                )
-            }
-
-            // --- SECTION ADDITIFS ---
-            if ((product.additivesCount ?: 0) > 0) {
-                DetailSectionHeader("Additifs (${product.additivesCount})")
-                Surface(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-                    color = if ((product.additivesCount ?: 0) > 3) Color(0xFFFFEBEE) else Color(0xFFE8F5E9),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.background(Color.White.copy(0.9f), CircleShape).size(44.dp)
+                    ) {
+                        Icon(Icons.Rounded.Close, null)
+                    }
+                    
+                    IconButton(
+                        onClick = onToggleFavorite,
+                        modifier = Modifier.background(Color.White.copy(0.9f), CircleShape).size(44.dp)
+                    ) {
                         Icon(
-                            if ((product.additivesCount ?: 0) > 3) Icons.Rounded.Warning else Icons.Rounded.Info, 
+                            if (isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                             null, 
-                            tint = if ((product.additivesCount ?: 0) > 3) Color.Red else Color(0xFF4CAF50)
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            "Ce produit contient ${product.additivesCount} additifs.",
-                            fontWeight = FontWeight.Bold,
-                            color = if ((product.additivesCount ?: 0) > 3) Color.Red else Color(0xFF2E7D32)
+                            tint = if (isFavorite) Color.Red else Color.Black
                         )
                     }
                 }
             }
 
-            // --- SECTION PRIX & AJOUT ---
-            HorizontalDivider(modifier = Modifier.padding(vertical = 32.dp), color = Color(0xFFEEEEEE))
-            
+            // --- CONTENU PRINCIPAL ---
             Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                OutlinedTextField(
-                    value = priceInput,
-                    onValueChange = { if (it.length <= 7) priceInput = it },
-                    label = { Text("Prix constaté (€)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    leadingIcon = { Icon(Icons.Rounded.EuroSymbol, null, tint = Color(0xFF00C853)) },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF00C853),
-                        focusedLabelColor = Color(0xFF00C853)
+                // Titre et Marque
+                Text(
+                    text = product.brands?.uppercase() ?: "UPERMARKET",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color(0xFF1A73E8),
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.sp
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = product.name ?: "Produit inconnu",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = (-0.5).sp,
+                        lineHeight = 32.sp
                     )
                 )
+                Text(
+                    text = product.quantity ?: "Format standard",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Gray
+                )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(Modifier.height(24.dp))
 
-                Button(
-                    onClick = { 
-                        if (price != null && price > 0 && !isAdding) {
-                            isAdding = true
-                            scope.launch {
-                                onAddToCart(price)
-                                isAdding = false
+                // --- SCORES EN ROW MODERNISÉ ---
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    ScoreCardPro("NUTRI-SCORE", product.nutriscore?.uppercase() ?: "?", getNutriColor(product.nutriscore), Modifier.weight(1f))
+                    ScoreCardPro("ECO-SCORE", product.ecoscore?.uppercase() ?: "?", getEcoColor(product.ecoscore), Modifier.weight(1f))
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                // --- ANALYSE NUTRITIONNELLE ---
+                if (product.levels != null) {
+                    Text("Analyse nutritionnelle", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                    Spacer(Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        NutrientBadgePro("Sucre", product.levels.sugars ?: "inconnu", Modifier.weight(1f))
+                        NutrientBadgePro("Sel", product.levels.salt ?: "inconnu", Modifier.weight(1f))
+                        NutrientBadgePro("Gras", product.levels.fat ?: "inconnu", Modifier.weight(1f))
+                    }
+                }
+
+                Spacer(Modifier.height(32.dp))
+
+                // --- INGRÉDIENTS & ADDITIFS (DESIGN ÉPURÉ) ---
+                Text("Détails du produit", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Spacer(Modifier.height(16.dp))
+                
+                DetailTile(
+                    icon = Icons.Rounded.RestaurantMenu,
+                    title = "Ingrédients",
+                    content = product.ingredients ?: "Non disponibles",
+                    color = Color(0xFF1A73E8)
+                )
+                
+                if ((product.additivesCount ?: 0) > 0) {
+                    Spacer(Modifier.height(12.dp))
+                    DetailTile(
+                        icon = Icons.Rounded.WarningAmber,
+                        title = "Additifs",
+                        content = "Contient ${product.additivesCount} additifs identifiés",
+                        color = if ((product.additivesCount ?: 0) > 3) Color(0xFFD32F2F) else Color(0xFFF57C00)
+                    )
+                }
+
+                Spacer(Modifier.height(40.dp))
+
+                // --- FOOTER FIXE : PRIX & BOUTON ---
+                Surface(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    color = Color(0xFFF8F9FA),
+                    border = BorderStroke(1.dp, Color(0xFFEEEEEE))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Input Prix
+                        Box(modifier = Modifier.width(80.dp)) {
+                            BasicTextField(
+                                value = priceInput,
+                                onValueChange = { if (it.length <= 6) priceInput = it },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                textStyle = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.Black,
+                                    textAlign = TextAlign.Center
+                                ),
+                                decorationBox = { innerTextField ->
+                                    if (priceInput.isEmpty()) Text("0.00", color = Color.LightGray, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                                    innerTextField()
+                                }
+                            )
+                        }
+                        
+                        Text("€", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                        
+                        Spacer(Modifier.width(12.dp))
+
+                        // Bouton Ajouter
+                        Button(
+                            onClick = { 
+                                if (price != null && price > 0 && !isAdding) {
+                                    isAdding = true
+                                    scope.launch {
+                                        onAddToCart(price)
+                                        isAdding = false
+                                    }
+                                }
+                            },
+                            enabled = price != null && price > 0 && !isAdding,
+                            modifier = Modifier.weight(1f).height(56.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Black,
+                                contentColor = Color.White
+                            ),
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            if (isAdding) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)
+                            } else {
+                                Icon(Icons.Rounded.AddShoppingCart, null, modifier = Modifier.size(20.dp))
+                                Spacer(Modifier.width(6.dp))
+                                Text("AJOUTER", fontWeight = FontWeight.Black, fontSize = 14.sp, maxLines = 1)
                             }
                         }
-                    },
-                    enabled = price != null && price > 0 && !isAdding,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .shadow(if (price != null && price > 0) 12.dp else 0.dp, RoundedCornerShape(20.dp)),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Black,
-                        contentColor = Color.White,
-                        disabledContainerColor = Color(0xFFE0E0E0)
-                    )
-                ) {
-                    if (isAdding) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)
-                    } else {
-                        Icon(Icons.Rounded.AddShoppingCart, null)
-                        Spacer(Modifier.width(12.dp))
-                        Text("AJOUTER AU PANIER", fontSize = 16.sp, fontWeight = FontWeight.Black)
                     }
                 }
             }
@@ -217,46 +247,73 @@ fun ProductDetailSheet(
 }
 
 @Composable
-fun DetailSectionHeader(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-        modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 12.dp)
-    )
+fun ScoreCardPro(label: String, score: String, color: Color, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier, 
+        shape = RoundedCornerShape(24.dp),
+        color = color.copy(alpha = 0.05f), 
+        border = BorderStroke(1.5.dp, color.copy(alpha = 0.2f))
+    ) {
+        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = color, fontWeight = FontWeight.Black)
+            Spacer(Modifier.height(4.dp))
+            Text(text = score, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black, color = color)
+        }
+    }
 }
 
 @Composable
-fun NutrientBadge(label: String, level: String) {
+fun NutrientBadgePro(label: String, level: String, modifier: Modifier = Modifier) {
     val color = when(level.lowercase()) {
-        "low" -> Color(0xFF4CAF50)
+        "low" -> Color(0xFF00C853)
         "moderate" -> Color(0xFFFFB300)
-        "high" -> Color(0xFFF44336)
+        "high" -> Color(0xFFFF5252)
         else -> Color.Gray
     }
     Surface(
-        color = color.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, color.copy(alpha = 0.2f))
+        modifier = modifier,
+        color = Color(0xFFF8F9FA),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, Color(0xFFEEEEEE))
     ) {
-        Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Box(modifier = Modifier.size(8.dp).background(color, CircleShape))
-            Spacer(Modifier.width(8.dp))
-            Text(label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = color)
+            Spacer(Modifier.height(4.dp))
+            Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+            Text(
+                text = when(level.lowercase()) { "low" -> "Faible"; "moderate" -> "Moyen"; "high" -> "Élevé"; else -> "?" },
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Black,
+                color = color
+            )
         }
     }
 }
 
 @Composable
-fun ScoreCard(label: String, score: String, color: Color, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier, 
-        shape = RoundedCornerShape(20.dp),
-        color = Color(0xFFF8F9FA), 
-        border = BorderStroke(1.dp, Color(0xFFEEEEEE))
+fun DetailTile(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, content: String, color: Color) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xFFF8F9FA))
+            .padding(16.dp),
+        verticalAlignment = Alignment.Top
     ) {
-        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray, fontWeight = FontWeight.Bold)
-            Text(text = score, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black, color = color)
+        Surface(modifier = Modifier.size(40.dp), shape = CircleShape, color = color.copy(alpha = 0.1f)) {
+            Box(contentAlignment = Alignment.Center) { Icon(icon, null, tint = color, modifier = Modifier.size(20.dp)) }
+        }
+        Spacer(Modifier.width(16.dp))
+        Column {
+            Text(title, fontWeight = FontWeight.Black, fontSize = 14.sp)
+            Text(
+                text = content,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.DarkGray,
+                lineHeight = 20.sp,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

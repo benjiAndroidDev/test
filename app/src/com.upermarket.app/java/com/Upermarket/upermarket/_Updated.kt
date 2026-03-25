@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.*
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -161,6 +162,7 @@ class MainActivity : ComponentActivity() {
 fun MainAppContent(
     authManager: AuthManager,
     cartViewModel: CartViewModel,
+    shoppingListViewModel: ShoppingListViewModel,
     isDarkMode: Boolean,
     onDarkModeChange: (Boolean) -> Unit
 ) {
@@ -200,7 +202,11 @@ fun MainAppContent(
                 navigationIcon = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(onClick = { showBudgetManagerSheet = true }) { Icon(Icons.Rounded.Tune, null, tint = Color(0xFF00C853)) }
-                        IconButton(onClick = { showShoppingListSheet = true }) { Icon(Icons.Rounded.ChecklistRtl, null, tint = Color(0xFF1976D2)) }
+                        IconButton(onClick = { showShoppingListSheet = true }) {
+                            BadgedBox(badge = { if (shoppingListViewModel.items.any { !it.isChecked }) Badge() }) {
+                                Icon(Icons.Rounded.ChecklistRtl, null, tint = Color(0xFF1976D2))
+                            }
+                        }
                     }
                 },
                 actions = {
@@ -259,7 +265,7 @@ fun MainAppContent(
                 onNavigateToSettings = { showProfileSheet = false; selectedItem = destinations.indexOf(Destination.SETTINGS); navController.navigate(Destination.SETTINGS.route) },
                 onDismiss = { showProfileSheet = false })
         }
-        if (showShoppingListSheet) ModalBottomSheet(onDismissRequest = { showShoppingListSheet = false }) { ShoppingListSheet { showShoppingListSheet = false } }
+        if (showShoppingListSheet) ModalBottomSheet(onDismissRequest = { showShoppingListSheet = false }) { ShoppingListSheet(shoppingListViewModel) { showShoppingListSheet = false } }
         if (showBudgetManagerSheet) ModalBottomSheet(onDismissRequest = { showBudgetManagerSheet = false }) { BudgetManagerSheet({ showBudgetManagerSheet = false }, cartViewModel, context) }
         if (showHistorySheet) ModalBottomSheet(onDismissRequest = { showHistorySheet = false }) { ScanHistorySheet(scanHistoryManager, favoritesViewModel, cartViewModel) }
     }
@@ -277,7 +283,8 @@ fun MainApp() {
                 is AuthState.NotAuthenticated, is AuthState.Error -> AuthScreen(authManager)
                 is AuthState.Authenticated -> {
                     val cartViewModel = remember(state.user.uid) { CartViewModel(context, state.user.uid) }
-                    MainAppContent(authManager, cartViewModel, isDarkMode, onDarkModeChange = { isDarkMode = it })
+                    val shoppingListViewModel = remember(state.user.uid) { ShoppingListViewModel(ShoppingListManager(context, state.user.uid)) }
+                    MainAppContent(authManager, cartViewModel, shoppingListViewModel, isDarkMode, onDarkModeChange = { isDarkMode = it })
                 }
             }
         }
@@ -347,6 +354,46 @@ class CartViewModel(context: Context, private val uid: String) : ViewModel() {
     }
     fun clearCart() { _cartItems.value = emptyList(); saveCart() }
     fun updateBudget(b: Float) { userMaxBudget = b; saveCart() }
+}
+
+class ShoppingListManager(context: Context, private val uid: String) {
+    private val prefs = context.getSharedPreferences("shopping_list_$uid", Context.MODE_PRIVATE)
+    private val gson = Gson()
+
+    fun getItems(): List<ShoppingItem> {
+        val json = prefs.getString("items", null) ?: return emptyList()
+        return try { gson.fromJson(json, object : com.google.gson.reflect.TypeToken<List<ShoppingItem>>() {}.type) } catch (e: Exception) { emptyList() }
+    }
+
+    fun saveItems(items: List<ShoppingItem>) {
+        prefs.edit().putString("items", gson.toJson(items)).apply()
+    }
+}
+
+class ShoppingListViewModel(private val mgr: ShoppingListManager) : ViewModel() {
+    private var _items = mutableStateOf(mgr.getItems())
+    val items: List<ShoppingItem> get() = _items.value
+
+    fun addItem(name: String) {
+        val id = if (_items.value.isEmpty()) 1 else _items.value.maxOf { it.id } + 1
+        _items.value = _items.value + ShoppingItem(id, name)
+        mgr.saveItems(_items.value)
+    }
+
+    fun toggleItem(id: Int) {
+        _items.value = _items.value.map { if (it.id == id) it.copy(isChecked = !it.isChecked) else it }
+        mgr.saveItems(_items.value)
+    }
+
+    fun removeItem(id: Int) {
+        _items.value = _items.value.filter { it.id != id }
+        mgr.saveItems(_items.value)
+    }
+
+    fun clearAll() {
+        _items.value = emptyList()
+        mgr.saveItems(_items.value)
+    }
 }
 
 class FavoritesViewModel(private val mgr: FavoritesManager) : ViewModel() {

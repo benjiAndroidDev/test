@@ -92,11 +92,13 @@ fun HomeScreen(
         Brand("Carrefour", R.drawable.carrefour_logo_1982, "https://www.carrefour.fr"),
         Brand("E.Leclerc", R.drawable.e_leclerc_logo_svg, "https://www.e.leclerc"),
         Brand("Auchan", R.drawable.logo_auchan_, "https://www.auchan.fr"),
-        Brand("Intermarché", R.drawable.breve29741, "https://www.intermarche.com"),
+        Brand("Intermarché", R.drawable.nouveau_logo_intermarche, "https://www.intermarche.com"),
         Brand("Casino", R.drawable.casino_supermarket_logo, "https://www.casinosupermarches.fr"),
         Brand("Netto", R.drawable.french_netto_logo_2019_svg, "https://www.netto.fr"),
         Brand("Monoprix", R.drawable._00625192, "https://www.monoprix.fr"),
-        Brand("Franprix", R.drawable.franprix_2026, "https://www.franprix.fr")
+        Brand("Franprix", R.drawable.franprix_2026, "https://www.franprix.fr"),
+        Brand("Cora", R.drawable.cora, "https://www.cora.fr"),
+        Brand("Grand Frais", R.drawable.grand_frais_logo, "https://www.grandfrais.com")
     )
 
     // AUTO-SCROLL LOGIC
@@ -207,6 +209,7 @@ fun HomeScreen(
             }
 
             item {
+                // SECTION ENSEIGNES PLUS LARGE
                 Spacer(modifier = Modifier.height(8.dp))
                 SectionHeader("Nos Enseignes")
                 
