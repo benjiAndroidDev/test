@@ -6,12 +6,6 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
 }
 
-// Nettoyage automatique des fichiers problématiques
-val problematicFile = file("src/com.upermarket.app/res/drawable/ecrase_de_pomme_de_terre_a_lhuile_dolive.png")
-if (problematicFile.exists()) {
-    problematicFile.renameTo(file("src/com.upermarket.app/res/drawable/ecrase_de_pomme_de_terre_a_lhuile_dolive.webp"))
-}
-
 android {
     namespace = "com.example.upermarket"
     compileSdk = 35
@@ -24,8 +18,7 @@ android {
         versionName = "1.8"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
-        // On définit une valeur par défaut pour MAPS_API_KEY si elle n'est pas dans local.properties
-        buildConfigField("String", "MAPS_API_KEY", "\"YOUR_API_KEY_HERE\"")
+        buildConfigField("String", "MAPS_API_KEY", "\"AIzaSyD1wT18QTiCkIWfGOoitiLSYSm93K7SRHk\"")
     }
 
     sourceSets {
@@ -36,122 +29,38 @@ android {
         }
     }
 
-    signingConfigs {
-        create("release") {
-            storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore") 
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-            signingConfig = signingConfigs.getByName("debug")
-        }
-    }
-    
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildFeatures {
         compose = true
-        viewBinding = true
         buildConfig = true
     }
 
-    configurations {
-        all {
-            exclude(group = "xmlpull", module = "xmlpull")
-            exclude(group = "xpp3", module = "xpp3")
-        }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-
-    lint {
-        baseline = file("lint-baseline.xml")
-        checkReleaseBuilds = false
-        abortOnError = false
-        checkDependencies = true
-        ignoreWarnings = true
-        disable += "MissingDefaultResource"
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }
 
 dependencies {
-    implementation("com.google.android.play:integrity:1.6.0")
-    implementation("com.google.firebase:firebase-appcheck-playintegrity")
-    implementation("com.google.firebase:firebase-appcheck-ktx")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.compose.animation.graphics)
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.material.icons.extended)
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.google.zxing:core:3.5.3")
-    implementation("com.google.firebase:firebase-firestore-ktx")
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.ui.auth)
-    implementation("com.google.mlkit:barcode-scanning:17.3.0")
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services.auth)
-    implementation(libs.googleid)
-    implementation(libs.firebase.crashlytics.buildtools)
-    implementation(libs.androidx.foundation)
-    implementation(libs.foundation)
     
-    val camerax_version = "1.5.1"
-    implementation("androidx.camera:camera-core:$camerax_version")
-    implementation("androidx.camera:camera-camera2:$camerax_version")
-    implementation("androidx.camera:camera-lifecycle:$camerax_version")
-    implementation("androidx.camera:camera-view:$camerax_version")
-    
-    // GOOGLE PLACES & LOCATION (On garde pour la géoloc)
+    // GOOGLE MAPS - DEPENDANCES DIRECTES (Zéro erreur de synchro)
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.maps.android:maps-compose:6.4.1")
     implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.google.android.libraries.places:places:4.1.0")
-    
-    // OPEN STREET MAP (OSMDROID)
-    implementation("org.osmdroid:osmdroid-android:6.1.18")
 
-    implementation(libs.guava)
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.kotlinx.serialization)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
     implementation(libs.coil.compose)
-    implementation(libs.material)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.constraintlayout)
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.androidx.datastore.preferences)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    
+    // Autres libs nécessaires
+    implementation(libs.androidx.material.icons.extended)
 }

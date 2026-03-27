@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -101,7 +102,6 @@ fun HomeScreen(
         Brand("Grand Frais", R.drawable.grand_frais_logo, "https://www.grandfrais.com")
     )
 
-    // AUTO-SCROLL LOGIC
     val brandListState = rememberLazyListState()
     LaunchedEffect(Unit) {
         while (true) {
@@ -132,7 +132,6 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
             item {
-                // --- MODERN SEARCH BAR PRO ---
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -153,7 +152,6 @@ fun HomeScreen(
                                 .padding(horizontal = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // ICON MAP DANS LA SEARCH BAR
                             Surface(
                                 onClick = { showStorePicker = true },
                                 modifier = Modifier.size(44.dp),
@@ -171,7 +169,6 @@ fun HomeScreen(
                             
                             Spacer(Modifier.width(12.dp))
                             
-                            // TEXT INTERACTIF ADRESSE
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
@@ -193,7 +190,6 @@ fun HomeScreen(
                                 )
                             }
                             
-                            // BOUTON RECHERCHE ICONE
                             Surface(
                                 modifier = Modifier.size(44.dp),
                                 shape = CircleShape,
@@ -209,7 +205,6 @@ fun HomeScreen(
             }
 
             item {
-                // SECTION ENSEIGNES PLUS LARGE
                 Spacer(modifier = Modifier.height(8.dp))
                 SectionHeader("Nos Enseignes")
                 
@@ -230,12 +225,78 @@ fun HomeScreen(
 
             item {
                 Spacer(modifier = Modifier.height(24.dp))
+                SectionHeader("Le Monde des Céréales 🥣")
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .height(220.dp)
+                        .clip(RoundedCornerShape(32.dp))
+                        .clickable { 
+                            val encoded = android.net.Uri.encode("Petit déjeuner")
+                            navController.navigate("subcategory_picker/$encoded") 
+                        }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable._156d41aef5d1348098293),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
+                                )
+                            )
+                    )
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(28.dp),
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        Surface(
+                            color = Color.White.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                "CHOIX GÉANT",
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.White
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "Le paradis du Petit Déjeuner",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White,
+                            lineHeight = 32.sp
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("Tout découvrir", color = Color.White, fontWeight = FontWeight.Black)
+                            Spacer(Modifier.width(8.dp))
+                            Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = Color.White, modifier = Modifier.size(20.dp))
+                        }
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
                 SectionHeader("Rayons")
                 Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                     categories.chunked(3).forEach { rowItems ->
                         Row(modifier = Modifier.fillMaxWidth()) {
                             rowItems.forEach { cat ->
-                                ModernCategoryItem(category = cat, modifier = Modifier.weight(1f), onClick = { navController.navigate("category_products/${cat.name}/${cat.apiTag}") })
+                                ModernCategoryItem(category = cat, modifier = Modifier.weight(1f), onClick = { 
+                                    val encoded = android.net.Uri.encode(cat.name)
+                                    navController.navigate("subcategory_picker/$encoded")
+                                })
                             }
                             if (rowItems.size < 3) { repeat(3 - rowItems.size) { Spacer(Modifier.weight(1f)) } }
                         }
