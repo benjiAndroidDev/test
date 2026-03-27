@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.*
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -26,10 +27,24 @@ import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation.NavController
 import com.example.upermarket.R
+import kotlinx.coroutines.flow.collectLatest
 
 // ==================== AUTH SYSTEM ====================
 
@@ -242,7 +257,9 @@ fun MainAppContent(
                         },
                         icon = { 
                             if (dest == Destination.CHEF) {
-                                Image(painter = painterResource(id = R.drawable.uperchef), contentDescription = dest.label, modifier = Modifier.size(56.dp).clip(CircleShape))
+                                Image(painter = painterResource(id = R.drawable.uperchef), contentDescription = dest.label, modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(CircleShape))
                             } else {
                                 Icon(imageVector = if (isSelected) dest.selectedIcon else dest.unselectedIcon, contentDescription = dest.label, tint = Color.Black)
                             }

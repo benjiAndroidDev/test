@@ -39,7 +39,16 @@ fun AppNavHost(
             SettingsScreen(authManager, false, {})
         }
         
-        // Route pour les produits par catégorie
+        // Sélecteur de sous-catégories
+        composable(
+            route = "subcategory_picker/{parentName}",
+            arguments = listOf(navArgument("parentName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val parentName = backStackEntry.arguments?.getString("parentName") ?: ""
+            SubCategoryPickerScreen(parentName = parentName, navController = navController)
+        }
+        
+        // Route pour les produits (CORRECTION DU CRASH ICI)
         composable(
             route = "category_products/{categoryName}/{categoryTag}",
             arguments = listOf(
@@ -47,6 +56,7 @@ fun AppNavHost(
                 navArgument("categoryTag") { type = NavType.StringType }
             )
         ) { backStackEntry ->
+            // On récupère bien categoryName et non parentName
             val categoryName = backStackEntry.arguments?.getString("categoryName") ?: ""
             val categoryTag = backStackEntry.arguments?.getString("categoryTag") ?: ""
             CategoryProductsScreen(
